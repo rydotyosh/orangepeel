@@ -53,6 +53,7 @@ public:
 		,theta(0)
 		,phi(0)
 		,rdown(false)
+		,pdown(false)
 	{
 	}
 
@@ -129,6 +130,7 @@ private:
 
 		v.Apply();
 
+		glEnable(GL_DEPTH_TEST);
 
 		glEnable(GL_NORMALIZE);
 
@@ -197,67 +199,52 @@ private:
 		glEnd();
 
 		{
-		std::pair<Vector3, Vector3> r = v.Ray(Vector2(mousex+1, mousey+1));
-		/*glBegin(GL_LINES);
-			Vector3 v=r.first+r.second;
-			glVertex3f(v.x,v.y,v.z);
-			//glVertex3f(r.second.x,r.second.y,r.second.z);
-			glVertex3f(0,0,0);
-		glEnd();*/
+			std::pair<Vector3, Vector3> r = v.Ray(Vector2(mousex+1, mousey+1));
 
-		//cross face
-		Vector3 coll;
-		if(
-			Rydot::ReflectTriangleRay(r.first, r.first+r.second*100, Vector3(-1.2,-1.2,0), Vector3(-1.2,1.2,0), Vector3(1.2,-1.2,0), coll)
-			)
-		{
-			glPointSize(10);
-			glColor3f(1,0,0);
-			glBegin(GL_POINTS);
-			glVertex3f(coll.x, coll.y, coll.z);
-			glEnd();
-		if(pdown)
-		{
-			record.push_back(coll);
-		}
+			glDisable(GL_DEPTH_TEST);
 
-		}
-		else if(
-			Rydot::ReflectTriangleRay(r.first, r.first+r.second*100, Vector3(1.2,1.2,0), Vector3(1.2,-1.2,0), Vector3(-1.2,1.2,0), coll)
-			)
-		{
-			glPointSize(10);
-			glColor3f(0,1,0);
-			glBegin(GL_POINTS);
-			glVertex3f(coll.x, coll.y, coll.z);
-			glEnd();
-		if(pdown)
-		{
-			record.push_back(coll);
-		}
-		}
+			//cross face
+			Vector3 coll;
+			if(
+				Rydot::ReflectTriangleRay(r.first, r.first+r.second*100, Vector3(-1.2,-1.2,0), Vector3(-1.2,1.2,0), Vector3(1.2,-1.2,0), coll)
+				)
+			{
+				glPointSize(10);
+				glColor3f(1,0,0);
+				glBegin(GL_POINTS);
+				glVertex3f(coll.x, coll.y, coll.z);
+				glEnd();
+				if(pdown)
+				{
+					record.push_back(coll);
+				}
+			}
+			else if(
+				Rydot::ReflectTriangleRay(r.first, r.first+r.second*100, Vector3(1.2,1.2,0), Vector3(1.2,-1.2,0), Vector3(-1.2,1.2,0), coll)
+				)
+			{
+				glPointSize(10);
+				glColor3f(0,1,0);
+				glBegin(GL_POINTS);
+				glVertex3f(coll.x, coll.y, coll.z);
+				glEnd();
+				if(pdown)
+				{
+					record.push_back(coll);
+				}
+			}
 
 			glPointSize(3);
 			glColor3f(0,0,1);
 			glBegin(GL_POINTS);
-		for(size_t i=0;i<record.size();++i)
-		{
-			const Vector3 &r=record[i];
-			glVertex3f(r.x, r.y, r.z);
+			for(size_t i=0;i<record.size();++i)
+			{
+				const Vector3 &r=record[i];
+				glVertex3f(r.x, r.y, r.z);
 
-		}
+			}
 			glEnd();
-
-
 		}
-/*		{
-		std::pair<Vector3, Vector3> r = v.Ray(Vector2(mousex-1, mousey-1));
-		glBegin(GL_LINES);
-			glVertex3f(r.first.x,r.first.y,r.first.z);
-			glVertex3f(r.second.x,r.second.y,r.second.z);
-		glEnd();
-		}*/
-
 
 		glutSwapBuffers();
 	}
