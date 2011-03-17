@@ -282,8 +282,11 @@ private:
 			int dx=mousex-tmpmousex;
 			int dy=mousey-tmpmousey;
 
-			theta-=dx*0.01;
-			phi+=dy*0.01;
+			Rect2 rt=v.GetView();
+			float yy=rt.Diagonal().y;
+
+			theta-=dx/yy*3.0;
+			phi+=dy/yy*3.0;
 
 			if(phi>1.5)phi=1.5;
 			if(phi<-1.5)phi=-1.5;

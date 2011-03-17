@@ -40,6 +40,10 @@ public:
 
 
 
+	Rect2 GetView(){return view_;}
+
+
+
 	bool SetCamera(const Vector3 &eye, const Vector3 &at, const Vector3 &sky)
 	{
 		matrix_.LookAt(eye, at, sky);
