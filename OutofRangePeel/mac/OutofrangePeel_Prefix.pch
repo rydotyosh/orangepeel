@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'OutofrangePeel' target in the 'OutofrangePeel' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif

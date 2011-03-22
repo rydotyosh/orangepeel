@@ -1,0 +1,324 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
+		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
+		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		C94D3AA313362BB700B70437 /* OutofrangePeelAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C94D3AA213362BB700B70437 /* OutofrangePeelAppDelegate.m */; };
+		C94D3B1E13362E4C00B70437 /* ExtOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = C94D3B1D13362E4C00B70437 /* ExtOpenGLView.m */; };
+		C94D3B2013362E5A00B70437 /* MacMain.m in Sources */ = {isa = PBXBuildFile; fileRef = C94D3B1F13362E5A00B70437 /* MacMain.m */; };
+		C94D3B4A13362ECF00B70437 /* MacMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C94D3B4313362ECF00B70437 /* MacMain.cpp */; };
+		C97AE5601335F55200CB4CD8 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97AE55F1335F55200CB4CD8 /* GLUT.framework */; };
+		C97AE5621335F55200CB4CD8 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97AE5611335F55200CB4CD8 /* OpenGL.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		1DDD58150DA1D0A300B32029 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		8D1107310486CEB800E47090 /* OutofrangePeel-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "OutofrangePeel-Info.plist"; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* OutofrangePeel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OutofrangePeel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C938BEA713366DE00039D6D6 /* dashpod.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = dashpod.h; path = ../OutofrangePeel/dashpod.h; sourceTree = SOURCE_ROOT; };
+		C94D3AA113362BB700B70437 /* OutofrangePeelAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutofrangePeelAppDelegate.h; sourceTree = "<group>"; };
+		C94D3AA213362BB700B70437 /* OutofrangePeelAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OutofrangePeelAppDelegate.m; sourceTree = "<group>"; };
+		C94D3AD113362D8C00B70437 /* OutofrangePeel_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutofrangePeel_Prefix.pch; sourceTree = "<group>"; };
+		C94D3B1C13362E4C00B70437 /* ExtOpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtOpenGLView.h; sourceTree = "<group>"; };
+		C94D3B1D13362E4C00B70437 /* ExtOpenGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExtOpenGLView.m; sourceTree = "<group>"; };
+		C94D3B1F13362E5A00B70437 /* MacMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MacMain.m; sourceTree = "<group>"; };
+		C94D3B4313362ECF00B70437 /* MacMain.cpp */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.cpp.cpp; name = MacMain.cpp; path = ../OutofrangePeel/MacMain.cpp; sourceTree = SOURCE_ROOT; };
+		C94D3B4413362ECF00B70437 /* OutofrangePeel.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = OutofrangePeel.h; path = ../OutofrangePeel/OutofrangePeel.h; sourceTree = SOURCE_ROOT; };
+		C94D3B4513362ECF00B70437 /* View.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = View.h; path = ../OutofrangePeel/View.h; sourceTree = SOURCE_ROOT; };
+		C94D3B4613362ECF00B70437 /* matrix.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = matrix.h; path = ../OutofrangePeel/matrix.h; sourceTree = SOURCE_ROOT; };
+		C94D3B4713362ECF00B70437 /* Events.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = Events.h; path = ../OutofrangePeel/Events.h; sourceTree = SOURCE_ROOT; };
+		C94D3B4813362ECF00B70437 /* MacMain.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = MacMain.h; path = ../OutofrangePeel/MacMain.h; sourceTree = SOURCE_ROOT; };
+		C94D3B4913362ECF00B70437 /* matrixutil.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = matrixutil.h; path = ../OutofrangePeel/matrixutil.h; sourceTree = SOURCE_ROOT; };
+		C97AE55F1335F55200CB4CD8 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		C97AE5611335F55200CB4CD8 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D11072E0486CEB800E47090 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+				C97AE5601335F55200CB4CD8 /* GLUT.framework in Frameworks */,
+				C97AE5621335F55200CB4CD8 /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C94D3B1C13362E4C00B70437 /* ExtOpenGLView.h */,
+				C94D3B1D13362E4C00B70437 /* ExtOpenGLView.m */,
+				C94D3AA113362BB700B70437 /* OutofrangePeelAppDelegate.h */,
+				C94D3AA213362BB700B70437 /* OutofrangePeelAppDelegate.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
+				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
+				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D1107320486CEB800E47090 /* OutofrangePeel.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* OutofrangePeel */ = {
+			isa = PBXGroup;
+			children = (
+				C94D3B4213362E9100B70437 /* Core */,
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = OutofrangePeel;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				C94D3B1F13362E5A00B70437 /* MacMain.m */,
+				C94D3AD113362D8C00B70437 /* OutofrangePeel_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8D1107310486CEB800E47090 /* OutofrangePeel-Info.plist */,
+				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
+				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+				C97AE55F1335F55200CB4CD8 /* GLUT.framework */,
+				C97AE5611335F55200CB4CD8 /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C94D3B4213362E9100B70437 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				C938BEA713366DE00039D6D6 /* dashpod.h */,
+				C94D3B4313362ECF00B70437 /* MacMain.cpp */,
+				C94D3B4413362ECF00B70437 /* OutofrangePeel.h */,
+				C94D3B4513362ECF00B70437 /* View.h */,
+				C94D3B4613362ECF00B70437 /* matrix.h */,
+				C94D3B4713362ECF00B70437 /* Events.h */,
+				C94D3B4813362ECF00B70437 /* MacMain.h */,
+				C94D3B4913362ECF00B70437 /* matrixutil.h */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D1107260486CEB800E47090 /* OutofrangePeel */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "OutofrangePeel" */;
+			buildPhases = (
+				8D1107290486CEB800E47090 /* Resources */,
+				8D11072C0486CEB800E47090 /* Sources */,
+				8D11072E0486CEB800E47090 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OutofrangePeel;
+			productInstallPath = "$(HOME)/Applications";
+			productName = OutofrangePeel;
+			productReference = 8D1107320486CEB800E47090 /* OutofrangePeel.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OutofrangePeel" */;
+			compatibilityVersion = "Xcode 3.1";
+			hasScannedForEncodings = 1;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* OutofrangePeel */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8D1107260486CEB800E47090 /* OutofrangePeel */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D1107290486CEB800E47090 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
+				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D11072C0486CEB800E47090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C94D3AA313362BB700B70437 /* OutofrangePeelAppDelegate.m in Sources */,
+				C94D3B1E13362E4C00B70437 /* ExtOpenGLView.m in Sources */,
+				C94D3B2013362E5A00B70437 /* MacMain.m in Sources */,
+				C94D3B4A13362ECF00B70437 /* MacMain.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C165DFE840E0CC02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		1DDD58140DA1D0A300B32029 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1DDD58150DA1D0A300B32029 /* English */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C01FCF4B08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OutofrangePeel_Prefix.pch;
+				INFOPLIST_FILE = "OutofrangePeel-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				PRODUCT_NAME = OutofrangePeel;
+			};
+			name = Debug;
+		};
+		C01FCF4C08A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = OutofrangePeel_Prefix.pch;
+				INFOPLIST_FILE = "OutofrangePeel-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				PRODUCT_NAME = OutofrangePeel;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /opt/local/include;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = /opt/local/include;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "OutofrangePeel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4B08A954540054247B /* Debug */,
+				C01FCF4C08A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OutofrangePeel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}
