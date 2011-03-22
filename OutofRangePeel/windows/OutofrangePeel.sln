@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OutofrangePeel", "OutofrangePeel\OutofrangePeel.vcproj", "{4610FB07-2158-439D-8253-835922F0ECD6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OutofrangePeel", "..\OutofrangePeel\OutofrangePeel.vcproj", "{4610FB07-2158-439D-8253-835922F0ECD6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
