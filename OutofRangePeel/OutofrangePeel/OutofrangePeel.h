@@ -5,6 +5,7 @@
 #include "Events.h"
 #include "matrix.h"
 #include "matrixutil.h"
+#include "dashpod.h"
 
 #include "View.h"
 
@@ -17,6 +18,7 @@ class OrangePeel:public IGLEvents
 	typedef Rydot::Matrix44f	Matrix44;
 	typedef Rydot::Vector2f	Vector2;
 	typedef Rydot::Vector3f	Vector3;
+	typedef Rydot::Dashpod<double> Dashpod;
 
 
 
@@ -29,14 +31,16 @@ class OrangePeel:public IGLEvents
 
 	View v;
 
-	int mousex;
-	int mousey;
+	float mousex;
+	float mousey;
 
-	int tmpmousex;
-	int tmpmousey;
+	float tmpmousex;
+	float tmpmousey;
+	
+	Dashpod theta;
+	Dashpod phi;
+	Dashpod dist;
 
-	double theta;
-	double phi;
 	bool rdown;
 	bool pdown;
 
@@ -50,8 +54,9 @@ public:
 		,mousey(0)
 		,tmpmousex(0)
 		,tmpmousey(0)
-		,theta(0)
-		,phi(0)
+		,theta(0.0)
+		,phi(0.0)
+		,dist(5.0)
 		,rdown(false)
 		,pdown(false)
 	{
@@ -68,7 +73,7 @@ private:
 
 		v.SetView(Rect2(0,0,640,480), 45);
 		v.SetCamera(
-			Vector3(0,0,5),
+			Vector3(0,0,dist.get()),
 			Vector3(0,0,0),
 			Vector3(0,1,0));
 
@@ -123,8 +128,12 @@ private:
 	{
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
+		double phi=this->phi.get();
+		double theta=this->theta.get();
+		double dist=this->dist.get();
+
 		v.SetCamera(
-			Vector3(5*cos(phi)*sin(theta),5*sin(phi),5*cos(phi)*cos(theta)),
+			Vector3(dist*cos(phi)*sin(theta),dist*sin(phi),dist*cos(phi)*cos(theta)),
 			Vector3(0,0,0),
 			Vector3(0,1,0));
 
@@ -245,16 +254,20 @@ private:
 			}
 			glEnd();
 		}
+		
+		this->theta.update();
+		this->phi.update();
+		this->dist.update();
 
-		glutSwapBuffers();
+		//glutSwapBuffers();
 	}
 
 
 
 	void Animate()
 	{
-		glutPostRedisplay();
-
+		//glutPostRedisplay();
+		
 		t++;
 	}
 
@@ -279,22 +292,29 @@ private:
 
 		if(rdown)
 		{
-			int dx=mousex-tmpmousex;
-			int dy=mousey-tmpmousey;
+			float dx=mousex-tmpmousex;
+			float dy=mousey-tmpmousey;
 
 			Rect2 rt=v.GetView();
 			float yy=rt.Diagonal().y;
 
-			theta-=dx/yy*3.0;
-			phi+=dy/yy*3.0;
+			theta.set(theta.getrefevernce()-dx/yy*3.0);
+			phi.set(phi.getrefevernce()+dy/yy*3.0);
 
-			if(phi>1.5)phi=1.5;
-			if(phi<-1.5)phi=-1.5;
+			if(phi.getrefevernce()>1.5)phi.set(1.5);
+			if(phi.getrefevernce()<-1.5)phi.set(-1.5);
 
+		}
+		
+		if(me.IsWheel())
+		{
+			dist.set(dist.get()*(1.0-me.Dir()*0.2));
 		}
 
 		tmpmousex=mousex;
 		tmpmousey=mousey;
+		
+		std::cout<<mousex<<"	"<<mousey<<std::endl;
 
 		//glutPostRedisplay();
 	}

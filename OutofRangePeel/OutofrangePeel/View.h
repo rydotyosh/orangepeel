@@ -89,7 +89,7 @@ public:
 			float(-(screen.y - diag.y*0.5)/diag.y *ratio),
 			-1.0f);
 
-		std::cerr<<screen.x<<"\t"<<screen.y<<"\n";
+		//std::cerr<<screen.x<<"\t"<<screen.y<<"\n";
 
 		return std::make_pair(eye_, matrix_.MultVector(v));
 	}

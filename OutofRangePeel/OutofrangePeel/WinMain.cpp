@@ -17,7 +17,10 @@ boost::shared_ptr<IGLEvents> events(new OrangePeel());
 void animate()
 {
 	if(events)
+	{
 		events->Animate();
+		glutPostRedisplay();
+	}
 }
 
 
@@ -25,7 +28,10 @@ void animate()
 void disp()
 {
 	if(events)
+	{
 		events->Display();
+		glutSwapBuffers();
+	}
 }
 
 
