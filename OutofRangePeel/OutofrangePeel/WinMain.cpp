@@ -5,6 +5,7 @@
 #include <math.h>
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
+#include "timecounter.h"
 
 #include "OutofrangePeel.h"
 
@@ -14,10 +15,15 @@ boost::shared_ptr<IGLEvents> events(new OrangePeel());
 
 
 
+Rydot::TimeInterval ti(0.016);
+
+
+
 void animate()
 {
 	if(events)
 	{
+		ti.update();
 		events->Animate();
 		glutPostRedisplay();
 	}
