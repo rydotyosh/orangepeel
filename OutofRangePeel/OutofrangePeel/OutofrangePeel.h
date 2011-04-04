@@ -8,6 +8,7 @@
 #include "dashpod.h"
 
 #include "View.h"
+#include "mesh.h"
 
 
 
@@ -19,6 +20,11 @@ class OrangePeel:public IGLEvents
 	typedef Rydot::Vector2f	Vector2;
 	typedef Rydot::Vector3f	Vector3;
 	typedef Rydot::Dashpod<double> Dashpod;
+
+	typedef Rydot::Mesh Mesh;
+
+
+	Mesh m;
 
 
 
@@ -114,12 +120,52 @@ private:
 
 		
 
-		float ambient[]={0.6,0.6,0.6,1.0};
+		float ambient[]={0.6f,0.6f,0.6f,1.0f};
 		glMaterialfv(GL_FRONT,GL_AMBIENT,ambient);
-		float diffuse[]={0.9,0.9,0.9,1.0};
+		float diffuse[]={0.9f,0.9f,0.9f,1.0f};
 		glMaterialfv(GL_FRONT,GL_DIFFUSE,diffuse);
-		float shininess[]={0.0,0.0,0.0,1.0};
+		float shininess[]={0.0f,0.0f,0.0f,1.0f};
 		glMaterialfv(GL_FRONT,GL_SHININESS,shininess);
+
+		Rydot::PrimitiveMeshCreator::CreateBox(m);
+		m.Subdivision();
+		m.Subdivision();
+		m.Subdivision();
+
+		for(size_t i=0;i<m.vertex.size();++i)
+		{
+			m.vertex[i].Normalize();
+		}
+
+		// ラティス変形してみる
+
+		// 制御点を設定
+		std::vector<Vector3> control(64);
+		for(int a=0;a<64;a++)
+		{
+			int i=a%4,j=(a/4)%4,k=a/16;
+
+			Vector3 displacement(0,0,0);
+			if(j==3)
+			{
+				displacement=Vector3(0,-0.05,0);
+				//if( (i==1||i==2)&&(k==1||k==2) )
+				//{
+				//	displacement=Vector3(0,0,0);
+				//}
+			}
+			if(j==0)
+			{
+				displacement=Vector3(0,0.05,0);
+				if( (i==1||i==2)&&(k==1||k==2) )
+				{
+					displacement=Vector3(0,0.25,0);
+				}
+			}
+			control[a]=Vector3( i/3.0, (j-1.5)/3.0*0.95+0.5, k/3.0 )+displacement;
+		}
+
+		Rydot::MeshDeformer::LatticeDeform(m, control);
 	}
 
 
@@ -152,7 +198,7 @@ private:
 		float light_position2[4]={cos(t*0.04)*1.5,cos(t*0.004)*1,sin(t*0.04)*1.5,1};
 		glLightfv(GL_LIGHT1,GL_POSITION,light_position2);
 		glEnable(GL_LIGHT1);
-		float col[4] = {0.3,0.7,0.5,1};
+		float col[4] = {0.3f,0.7f,0.5f,1};
 		glLightfv(GL_LIGHT1, GL_DIFFUSE, col);
 
 		glEnable(GL_LIGHTING);
@@ -163,7 +209,7 @@ private:
 		{
 			glPushMatrix();
 
-			glScalef(0.2,0.2,0.2);
+			glScalef(0.2f,0.2f,0.2f);
 			glTranslatef((i%n-(n-1)/2.0)*2,(i/n-(n-1)/2.0)*2,0);
 
 			glBegin(GL_TRIANGLES);
@@ -207,39 +253,44 @@ private:
 			glVertex3f(light_position2[0],light_position2[1],light_position2[2]);
 		glEnd();
 
+		glColor3f(0.95f,0.6f,0.1f);
+		glBegin(GL_TRIANGLES);
+		for(size_t i=0;i<m.faces.size();++i)
+		{
+			for(size_t v=0;v<3;++v)
+			{
+				glVertex3fv(&(m.vertex[m.faces[i].vertex[v]].x));
+			}
+		}
+		glEnd();
+
 		{
 			std::pair<Vector3, Vector3> r = v.Ray(Vector2(mousex+1, mousey+1));
 
 			glDisable(GL_DEPTH_TEST);
 
 			//cross face
-			Vector3 coll;
-			if(
-				Rydot::ReflectTriangleRay(r.first, r.first+r.second*100, Vector3(-1.2,-1.2,0), Vector3(-1.2,1.2,0), Vector3(1.2,-1.2,0), coll)
-				)
+			for(size_t i=0;i<m.faces.size();++i)
 			{
-				glPointSize(10);
-				glColor3f(1,0,0);
-				glBegin(GL_POINTS);
-				glVertex3f(coll.x, coll.y, coll.z);
-				glEnd();
-				if(pdown)
+				Vector3 coll;
+				if(
+					Rydot::ReflectTriangleRay(r.first, r.first+r.second*100,
+					m.vertex[m.faces[i].vertex[0]],
+					m.vertex[m.faces[i].vertex[2]],
+					m.vertex[m.faces[i].vertex[1]],
+					coll)
+					)
 				{
-					record.push_back(coll);
-				}
-			}
-			else if(
-				Rydot::ReflectTriangleRay(r.first, r.first+r.second*100, Vector3(1.2,1.2,0), Vector3(1.2,-1.2,0), Vector3(-1.2,1.2,0), coll)
-				)
-			{
-				glPointSize(10);
-				glColor3f(0,1,0);
-				glBegin(GL_POINTS);
-				glVertex3f(coll.x, coll.y, coll.z);
-				glEnd();
-				if(pdown)
-				{
-					record.push_back(coll);
+					glPointSize(10);
+					glColor3f(1,0,0);
+					glBegin(GL_POINTS);
+					glVertex3f(coll.x, coll.y, coll.z);
+					glEnd();
+					if(pdown)
+					{
+						record.push_back(coll);
+					}
+					break;
 				}
 			}
 
@@ -254,12 +305,10 @@ private:
 			}
 			glEnd();
 		}
-		
+
 		this->theta.update();
 		this->phi.update();
 		this->dist.update();
-
-		//glutSwapBuffers();
 	}
 
 

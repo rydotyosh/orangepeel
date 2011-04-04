@@ -18,10 +18,6 @@
 
 #include "motion.h"
 
-#include <gl/gl.h>
-
-#include <glex/texture.h>
-
 #include <math.h>
 
 namespace Rydot
@@ -1392,6 +1388,58 @@ struct PrimitiveMeshCreator
 		f.push_back(Face(4,0,3));
 		f.push_back(Face(4,7,6));
 		f.push_back(Face(6,5,4));
+		return 0;
+	}
+};
+
+
+namespace MeshDeformer
+{
+	// バーンシュタイン基底関数
+	double B_3(int i,double _t)
+	{
+		switch(i)
+		{
+			case 0:return (1-_t)*(1-_t)*(1-_t);
+			case 1:return 3*(1-_t)*(1-_t)*_t;
+			case 2:return 3*(1-_t)*_t*_t;
+			case 3:return _t*_t*_t;
+		}
+		return 0;
+	}
+
+	// ベジェ空間
+	// パラメータposと制御点controlを入力すれば結果の点が出てくる
+	// posの各座標値は[0:1]の範囲でないとちょっとまずい。
+	Vector3f beziercube(const Vector3fv &control,Vector3f &pos)
+	{
+		float Bx[]=
+			{B_3(0,pos.x),B_3(1,pos.x),B_3(2,pos.x),B_3(3,pos.x)};
+		float By[]=
+			{B_3(0,pos.y),B_3(1,pos.y),B_3(2,pos.y),B_3(3,pos.y)};
+		float Bz[]=
+			{B_3(0,pos.z),B_3(1,pos.z),B_3(2,pos.z),B_3(3,pos.z)};
+		Vector3f res(0,0,0);
+		for(int a=0;a<64;a++)
+		{
+			int i=a%4,j=(a/4)%4,k=a/16;
+			res+=control[a]*Bx[i]*By[j]*Bz[k];
+		}
+		return res;
+	}
+
+	int LatticeDeform(Mesh &m, const Vector3fv &control)
+	{
+		if(control.size() != 64)return 0;
+
+		Rect3f bb;
+		m.BoundingBox(bb);
+
+		for(size_t i=0;i<m.vertex.size();++i)
+		{
+			m.vertex[i] = bb.TransformFrom(beziercube(control, bb.TransformTo(m.vertex[i])));
+		}
+		
 		return 0;
 	}
 };

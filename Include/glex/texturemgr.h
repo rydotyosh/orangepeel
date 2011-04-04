@@ -14,7 +14,7 @@
 #pragma once
 
 #include <stdlib.h>
-#include <gl/glut.h>
+#include <gl/gl.h>
 
 #include <stdio.h>
 #include <stdlib.h>

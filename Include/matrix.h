@@ -1751,6 +1751,11 @@ public:
 		Vector3<T> dv=_v-p1,dr=Diagonal();
 		return Vector3<T>(dv.x/dr.x,dv.y/dr.y,dv.z/dr.z);
 	}
+	Vector3<T> TransformFrom(const Vector3<T> &_v)const
+	{
+		Vector3<T> dr=Diagonal();
+		return Vector3<T>(_v.x*dr.x, _v.y*dr.y, _v.z*dr.z)+p1;
+	}
 	//À•W’l‚ğ¸‡‚É•À‚×‚é
 	void AscendingOrder()
 	{

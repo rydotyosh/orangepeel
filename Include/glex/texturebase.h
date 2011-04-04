@@ -17,7 +17,7 @@
 #define __RYDOT_TEXTURE_BASE_H__
 
 #include <stdlib.h>
-#include <gl/glut.h>
+#include <gl/gl.h>
 
 #include <stdio.h>
 #include <stdlib.h>
