@@ -50,7 +50,7 @@ public:
 	Vector3f Interpolate(float p,int loop,int end)
 	{
 		//p%=end;
-		p=fmod(p,end);
+		p=fmod(p,float(end));
 		int a,b,i;
 		for(i=0;i<nscene;i++)
 		{
@@ -113,7 +113,7 @@ public:
 	Quaternionf Interpolate(float p,int loop,int end)
 	{
 		//p%=end;
-		p=fmod(p,end);
+		p=fmod(p,float(end));
 		int a,b,i;
 		for(i=0;i<nscene;i++)
 		{
@@ -227,7 +227,7 @@ public:
 	//‚È‚¯‚ê‚Î-1‚ð•Ô‚·B
 	int GetMotionID(const std::string &name)const
 	{
-		int msz=motions.size();
+		int msz=int(motions.size());
 		for(int i=0;i<msz;i++)
 		{
 			if(name==motions[i].name)
@@ -240,7 +240,7 @@ public:
 	//‚È‚¯‚ê‚Î-1‚ð•Ô‚·B
 	int GetBoneID(std::string &name)
 	{
-		int bsz=bones.size();
+		int bsz=int(bones.size());
 		for(int i=0;i<bsz;i++)
 		{
 			if(name==bones[i].name)
@@ -316,8 +316,8 @@ public:
 	void MakeSubCoords(int n)
 	{
 		Bone &b=bones[n];
-		int nc=b.child.size();
-		for(int i=0;i<nc;i++)
+		size_t nc=b.child.size();
+		for(size_t i=0;i<nc;i++)
 		{
 			int j=b.child[i];
 			Bone &c=bones[j];
@@ -336,7 +336,7 @@ public:
 		file f("dbgbonetree.txt","wt");
 		//FILE *fp=fopen("dbgbonetree.txt","wt");
 
-		for(int i=0;i<bones.size();i++)
+		for(size_t i=0;i<bones.size();i++)
 		{
 			if(bones[i].parent!=-1)
 			{
@@ -348,7 +348,7 @@ public:
 			{
 				fprintf(f.get(),"%s(%d):\n",bones[i].name.c_str(),i);
 			}
-			for(int j=0;j<bones[i].child.size();j++)
+			for(size_t j=0;j<bones[i].child.size();j++)
 			{
 				fprintf(f.get()," %s(%d)\n",bones[bones[i].child[j]].name.c_str(),bones[i].child[j]);
 			}
@@ -356,7 +356,7 @@ public:
 
 		fprintf(f.get(),"\ntree\n");
 
-		for(int i=0;i<roots.size();i++)
+		for(size_t i=0;i<roots.size();i++)
 		{
 			fprintf(f.get(),"root\n");
 			DbgBone(f,roots[i]);

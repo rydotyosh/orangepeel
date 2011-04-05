@@ -12,6 +12,38 @@
 
 
 
+class Stroke
+{
+	typedef float Float;
+	typedef Rydot::Vector2f	Vector2;
+	typedef Rydot::Vector3f	Vector3;
+
+	std::vector<Vector3> record;
+
+
+
+public:
+	Stroke(){}
+
+
+
+public:
+	bool Add(const Vector3 &v)
+	{
+		record.push_back(v);
+		return true;
+	}
+
+
+
+	const std::vector<Vector3> &Get()const{return record;}
+
+
+
+};
+
+
+
 class OrangePeel:public IGLEvents
 {
 	typedef float Float;
@@ -23,10 +55,8 @@ class OrangePeel:public IGLEvents
 
 	typedef Rydot::Mesh Mesh;
 
-
 	Mesh m;
-
-
+	std::vector<Vector3> originalVertices;
 
 	template <class T>
 	T max(const T &a, const T &b){return (a>b)?a:b;}
@@ -50,7 +80,8 @@ class OrangePeel:public IGLEvents
 	bool rdown;
 	bool pdown;
 
-	std::vector<Vector3> record;
+	//std::vector<Vector3> record;
+	std::vector<Stroke> strokes;
 
 
 public:
@@ -137,6 +168,8 @@ private:
 			m.vertex[i].Normalize();
 		}
 
+		originalVertices = m.vertex;
+
 		// ラティス変形してみる
 
 		// 制御点を設定
@@ -166,6 +199,8 @@ private:
 		}
 
 		Rydot::MeshDeformer::LatticeDeform(m, control);
+
+		m.CalcNormal();
 	}
 
 
@@ -203,45 +238,49 @@ private:
 
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
+		
+		float white[]={1,1,1,1};
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, white);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, white);
+		float black[]={0,0,0,1};
+		glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, black);
 
-		int n=6;
-		for(int i=0;i<n*n;i++)
-		{
-			glPushMatrix();
+		//int n=6;
+		//for(int i=0;i<n*n;i++)
+		//{
+		//	glPushMatrix();
 
-			glScalef(0.2f,0.2f,0.2f);
-			glTranslatef((i%n-(n-1)/2.0)*2,(i/n-(n-1)/2.0)*2,0);
+		//	glScalef(0.2f,0.2f,0.2f);
+		//	glTranslatef((i%n-(n-1)/2.0)*2,(i/n-(n-1)/2.0)*2,0);
 
-			glBegin(GL_TRIANGLES);
-				/* 1つ目の三角形 */
-				glTexCoord2f(0,0);
-				glNormal3f(-1,-1,3);
-				glVertex3f(-1,-1,0);
+		//	glBegin(GL_TRIANGLES);
+		//		glTexCoord2f(0,0);
+		//		glNormal3f(-1,-1,3);
+		//		glVertex3f(-1,-1,0);
 
-				glTexCoord2f(1,0);
-				glNormal3f(1,-1,3);
-				glVertex3f(1,-1,0);
+		//		glTexCoord2f(1,0);
+		//		glNormal3f(1,-1,3);
+		//		glVertex3f(1,-1,0);
 
-				glTexCoord2f(1,1);
-				glNormal3f(1,1,3);
-				glVertex3f(1,1,0);
+		//		glTexCoord2f(1,1);
+		//		glNormal3f(1,1,3);
+		//		glVertex3f(1,1,0);
 
-				/* 2つ目の三角形 */
-				glTexCoord2f(1,1);
-				glNormal3f(1,1,3);
-				glVertex3f(1,1,0);
+		//		glTexCoord2f(1,1);
+		//		glNormal3f(1,1,3);
+		//		glVertex3f(1,1,0);
 
-				glTexCoord2f(0,1);
-				glNormal3f(-1,1,3);
-				glVertex3f(-1,1,0);
+		//		glTexCoord2f(0,1);
+		//		glNormal3f(-1,1,3);
+		//		glVertex3f(-1,1,0);
 
-				glTexCoord2f(0,0);
-				glNormal3f(-1,-1,3);
-				glVertex3f(-1,-1,0);
-			glEnd();
+		//		glTexCoord2f(0,0);
+		//		glNormal3f(-1,-1,3);
+		//		glVertex3f(-1,-1,0);
+		//	glEnd();
 
-			glPopMatrix();
-		}
+		//	glPopMatrix();
+		//}
 
 		glDisable(GL_LIGHTING);
 		glDisable(GL_TEXTURE_2D);
@@ -253,16 +292,27 @@ private:
 			glVertex3f(light_position2[0],light_position2[1],light_position2[2]);
 		glEnd();
 
-		glColor3f(0.95f,0.6f,0.1f);
+		glEnable(GL_LIGHTING);
+		//glColor3f(0.95f,0.6f,0.1f);
 		glBegin(GL_TRIANGLES);
+		float orange[]={0.95f,0.6f,0.1f,1};
+		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, orange);
+		float amborange[]={0.95f,0.6f,0.1f,1};
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amborange);
+		float emiorange[]={0.3f,0.2f,0.1f,1};
+		glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emiorange);
+
 		for(size_t i=0;i<m.faces.size();++i)
 		{
 			for(size_t v=0;v<3;++v)
 			{
-				glVertex3fv(&(m.vertex[m.faces[i].vertex[v]].x));
+				size_t p=m.faces[i].vertex[v];
+				glNormal3fv(&(m.normals[p].x));
+				glVertex3fv(&(m.vertex[p].x));
 			}
 		}
 		glEnd();
+		glDisable(GL_LIGHTING);
 
 		{
 			std::pair<Vector3, Vector3> r = v.Ray(Vector2(mousex+1, mousey+1));
@@ -288,22 +338,25 @@ private:
 					glEnd();
 					if(pdown)
 					{
-						record.push_back(coll);
+						strokes.back().Add(coll);
+						//record.push_back(coll);
 					}
 					break;
 				}
 			}
 
-			glPointSize(3);
 			glColor3f(0,0,1);
-			glBegin(GL_POINTS);
-			for(size_t i=0;i<record.size();++i)
+			for(size_t i=0;i<strokes.size();++i)
 			{
-				const Vector3 &r=record[i];
-				glVertex3f(r.x, r.y, r.z);
-
+				glBegin(GL_LINE_STRIP);
+				const std::vector<Vector3> &s=strokes[i].Get();
+				for(size_t k=0;k<s.size();++k)
+				{
+					const Vector3 &r=s[k];
+					glVertex3f(r.x, r.y, r.z);
+				}
+				glEnd();
 			}
-			glEnd();
 		}
 
 		this->theta.update();
@@ -336,6 +389,12 @@ private:
 			if(me.Button()==GLUT_LEFT_BUTTON)
 			{
 				pdown = (me.State()==GLUT_DOWN);
+
+				if(pdown)
+				{
+					if(strokes.empty())strokes.push_back(Stroke());
+					if(!strokes.back().Get().empty())strokes.push_back(Stroke());
+				}
 			}
 		}
 

@@ -71,7 +71,7 @@ public:
 	static void sleep(double s)
 	{
 	#ifdef _WIN32
-		Sleep(s*1000);
+		Sleep(DWORD(s*1000));
 	#else
 		usleep(s*1000000);
 	#endif

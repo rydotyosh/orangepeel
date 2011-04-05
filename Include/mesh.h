@@ -843,31 +843,31 @@ public:
 	//各頂点のノーマルを求める(かなりテキトー)
 	void CalcNormal()
 	{
-		int nv=vertex.size();
+		size_t nv=vertex.size();
 		normals.resize(nv);
-		for(int i=0;i<nv;i++)
+		for(size_t i=0;i<nv;i++)
 		{
 			normals[i]=Vector3f(0,0,0);
 		}
 		for(TrianglevlItr itr=classified_triangles.begin();itr!=classified_triangles.end();++itr)
 		{
 			Trianglev fv=*itr;
-			int sz=fv.size();
+			size_t sz=fv.size();
 			
-			for(int j=0;j<sz;++j)
+			for(size_t j=0;j<sz;++j)
 			{
 				Triangle &f=fv[j];
 				Vector3f n=TriangleNormal(
 					vertex[f.vertex[0]],
 					vertex[f.vertex[1]],
 					vertex[f.vertex[2]]);
-				for(int k=0;k<3;k++)
+				for(size_t k=0;k<3;k++)
 				{
 					normals[f.vertex[k]]+=n;
 				}
 			}
 		}
-		for(int i=0;i<nv;i++)
+		for(size_t i=0;i<nv;i++)
 		{
 			normals[i].Normalize();
 		}
