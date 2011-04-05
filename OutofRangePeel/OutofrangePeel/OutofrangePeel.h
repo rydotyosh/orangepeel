@@ -19,6 +19,7 @@ class Stroke
 	typedef Rydot::Vector3f	Vector3;
 
 	std::vector<Vector3> record;
+	std::vector<Vector3> simplified;
 
 
 
@@ -36,7 +37,37 @@ public:
 
 
 
-	const std::vector<Vector3> &Get()const{return record;}
+	bool Simplify()
+	{
+		simplified.clear();
+
+		double dist=0.005;
+
+		for(size_t i=0;i<record.size();++i)
+		{
+			if(i==0)
+			{
+				simplified.push_back(record[0]);
+				continue;
+			}
+			Vector3 p = (record[i]+record[i-1])*0.5;
+			if(simplified.back().Dist2(p)<dist)continue;
+			simplified.push_back(p);
+		}
+		if(!record.empty())
+		{
+			if(simplified.size()>=2 && simplified.back().Dist2(record.back())<dist)
+				simplified.back()=record.back();
+			else
+				simplified.push_back(record.back());
+		}
+
+		return true;
+	}
+
+
+
+	const std::vector<Vector3> &Get()const{return simplified;}
 
 
 
@@ -201,6 +232,8 @@ private:
 		Rydot::MeshDeformer::LatticeDeform(m, control);
 
 		m.CalcNormal();
+
+		strokes.push_back(Stroke());
 	}
 
 
@@ -339,6 +372,7 @@ private:
 					if(pdown)
 					{
 						strokes.back().Add(coll);
+						strokes.back().Simplify();
 						//record.push_back(coll);
 					}
 					break;
