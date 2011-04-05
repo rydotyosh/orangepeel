@@ -674,7 +674,7 @@ public:
 	{
 		Trianglev tv;
 		Edgev ev;
-		int fsz=faces.size();
+		//int fsz=faces.size();
 		
 		MakeTriangles(tv);
 		MakeEdges(ev);
@@ -728,7 +728,7 @@ public:
 	int SplitByGroup(std::vector<Mesh> &result)const
 	{
 		int fsz=faces.size();
-		int vsz=vertex.size();
+		//int vsz=vertex.size();
 		//どのグループに属するかをマーキングする
 		intv mark;
 		mark.resize(fsz);
@@ -1031,7 +1031,7 @@ public:
 		vertex=mesh.vertex;
 
 		int nf=mesh.faces.size();
-		int nv=mesh.vertex.size();
+		//int nv=mesh.vertex.size();
 		
 		faces.reserve(nf);
 		edges.reserve(nf*4);
@@ -1266,7 +1266,7 @@ public:
 	int FindEdgeOrderedID(int a,int b)const
 	{
 		int ne=edges.size();
-		int id=-1;
+		//int id=-1;
 		for(int i=0;i<ne;i++)
 		{
 			if(edges[i].HasEdge(a,b)){return i;}
@@ -1411,7 +1411,7 @@ namespace MeshDeformer
 	// ベジェ空間
 	// パラメータposと制御点controlを入力すれば結果の点が出てくる
 	// posの各座標値は[0:1]の範囲でないとちょっとまずい。
-	Vector3f beziercube(const Vector3fv &control,Vector3f &pos)
+	Vector3f beziercube(const Vector3fv &control,const Vector3f &pos)
 	{
 		float Bx[]=
 			{B_3(0,pos.x),B_3(1,pos.x),B_3(2,pos.x),B_3(3,pos.x)};

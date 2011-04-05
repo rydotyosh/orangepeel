@@ -341,12 +341,12 @@ public:
 			if(bones[i].parent!=-1)
 			{
 			fprintf(f.get(),"%s(%d):[parent:%s(%d)]\n",
-				bones[i].name.c_str(),i,
+				bones[i].name.c_str(),int(i),
 				bones[bones[i].parent].name.c_str(),bones[i].parent
 				);
 			}else
 			{
-				fprintf(f.get(),"%s(%d):\n",bones[i].name.c_str(),i);
+				fprintf(f.get(),"%s(%d):\n",bones[i].name.c_str(),int(i));
 			}
 			for(size_t j=0;j<bones[i].child.size();j++)
 			{

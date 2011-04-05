@@ -576,8 +576,8 @@ public:
 	static Quaternion Ln(const Quaternion &_q)
 	{
 		const double th=acos(_q.w),s=sin(th);
-		const double th2=atan2(sqrt(_q.x*_q.x+_q.y*_q.y+_q.z*_q.z),_q.w);
-		const double l=_q.Length();
+		//const double th2=atan2(sqrt(_q.x*_q.x+_q.y*_q.y+_q.z*_q.z),_q.w);
+		//const double l=_q.Length();
 		if(s>0){double sc=th/s;return Quaternion<T>(_q.x*sc,_q.y*sc,_q.z*sc,0);}
 		else{return Quaternion<T>(0,0,0,0);}
 	}

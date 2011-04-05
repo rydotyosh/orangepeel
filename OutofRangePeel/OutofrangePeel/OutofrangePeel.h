@@ -29,9 +29,10 @@ public:
 
 
 public:
+	// v must be on the unit sphere
 	bool Add(const Vector3 &v)
 	{
-		record.push_back(v);
+		record.push_back(v.Norm());
 		return true;
 	}
 
@@ -113,6 +114,8 @@ class OrangePeel:public IGLEvents
 
 	//std::vector<Vector3> record;
 	std::vector<Stroke> strokes;
+	
+	std::vector<Vector3> control;
 
 
 public:
@@ -204,7 +207,7 @@ private:
 		// ラティス変形してみる
 
 		// 制御点を設定
-		std::vector<Vector3> control(64);
+		control.resize(64);
 		for(int a=0;a<64;a++)
 		{
 			int i=a%4,j=(a/4)%4,k=a/16;
@@ -371,22 +374,32 @@ private:
 					glEnd();
 					if(pdown)
 					{
-						strokes.back().Add(coll);
+						size_t v0 = m.faces[i].vertex[0];
+						size_t v1 = m.faces[i].vertex[1];
+						size_t v2 = m.faces[i].vertex[2];
+						
+						Vector3 coef;
+						Rydot::ReflectTriangleRayTopology(r.first, r.first+r.second*100,
+														  m.vertex[m.faces[i].vertex[0]],
+														  m.vertex[m.faces[i].vertex[2]],
+														  m.vertex[m.faces[i].vertex[1]],
+														  coef);
+						strokes.back().Add(originalVertices[v0]*(1-coef.x-coef.y)+originalVertices[v2]*coef.x+originalVertices[v1]*coef.y);
 						strokes.back().Simplify();
-						//record.push_back(coll);
 					}
 					break;
 				}
 			}
 
 			glColor3f(0,0,1);
+			Rydot::Rect3f bb(-1,-1,-1,1,1,1);
 			for(size_t i=0;i<strokes.size();++i)
 			{
 				glBegin(GL_LINE_STRIP);
 				const std::vector<Vector3> &s=strokes[i].Get();
 				for(size_t k=0;k<s.size();++k)
 				{
-					const Vector3 &r=s[k];
+					const Vector3 &r=bb.TransformFrom(Rydot::MeshDeformer::beziercube(control, bb.TransformTo(s[k])));
 					glVertex3f(r.x, r.y, r.z);
 				}
 				glEnd();

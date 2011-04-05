@@ -252,6 +252,7 @@
 				INFOPLIST_FILE = "OutofrangePeel-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = OutofrangePeel;
+				USER_HEADER_SEARCH_PATHS = ../../Include;
 			};
 			name = Debug;
 		};
@@ -266,6 +267,7 @@
 				INFOPLIST_FILE = "OutofrangePeel-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = OutofrangePeel;
+				USER_HEADER_SEARCH_PATHS = ../../Include;
 			};
 			name = Release;
 		};
