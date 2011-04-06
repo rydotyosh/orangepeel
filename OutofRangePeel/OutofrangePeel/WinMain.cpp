@@ -45,7 +45,7 @@ void disp()
 void mouse(int button, int state, int x, int y)
 {
 	if(events)
-		events->Mouse(MouseEvent(button, state, x, y, 0));
+		events->Mouse(MouseEvent(button, state, float(x), float(y), 0));
 }
 
 
@@ -53,7 +53,7 @@ void mouse(int button, int state, int x, int y)
 void mousemove(int x, int y)
 {
 	if(events)
-		events->Mouse(MouseEvent(-1, 1, x, y, 0));
+		events->Mouse(MouseEvent(-1, 1, float(x), float(y), 0));
 }
 
 
@@ -61,7 +61,7 @@ void mousemove(int x, int y)
 void mousepassivemove(int x, int y)
 {
 	if(events)
-		events->Mouse(MouseEvent(-1, 0, x, y, 0));
+		events->Mouse(MouseEvent(-1, 0, float(x), float(y), 0));
 }
 
 
@@ -69,7 +69,7 @@ void mousepassivemove(int x, int y)
 void mousewheel(int button, int dir, int x, int y)
 {
 	if(events)
-		events->Mouse(MouseEvent(button, -1, x, y, dir));
+		events->Mouse(MouseEvent(button, -1, float(x), float(y), float(dir)));
 }
 
 

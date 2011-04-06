@@ -175,7 +175,7 @@ public:
 		float den=(u).ExProd(v);
 		Vector2f a(v.y,-v.x),b(-u.y,u.x);
 		Vector2f pp(a.DotProd(r-p[0]),b.DotProd(r-p[0]));
-		pp*=1.0/den;
+		pp*=1.0f/den;
 		float z=(vtx[vertex[1]].z-vtx[vertex[0]].z)*pp.x+(vtx[vertex[2]].z-vtx[vertex[0]].z)*pp.y+vtx[vertex[0]].z;
 		return ((pos.z-z)>=0)?1:-1;
 	}
@@ -192,12 +192,12 @@ public:
 	int RayZ(const Vector3f &pos,const Vector3fv &vtx,intv &exceptvtx,iipairv &exceptedg)const
 	{
 		//例外頂点があったら無効
-		for(int i=0;i<exceptvtx.size();i++)
+		for(size_t i=0;i<exceptvtx.size();i++)
 		{
 			if(HasVertex(exceptvtx[i]))return 0;
 		}
 		//例外エッジがあったら無効
-		for(int i=0;i<exceptedg.size();i++)
+		for(size_t i=0;i<exceptedg.size();i++)
 		{
 			if(HasEdge(exceptedg[i]))return 0;
 		}
@@ -223,7 +223,7 @@ public:
 		//辺or頂点上にあるとき
 		if( (s[0]==0)||(s[1]==0)||(s[2]==0) )
 		{
-			for(int i=0;i<3;i++)
+			for(size_t i=0;i<3;i++)
 			{
 				//辺
 				if((s[i]==0)&&(s[(i+1)%3]==s[(i+2)%3]))
@@ -247,11 +247,11 @@ public:
 	//頂点の座標の入ったVector3fv型の頂点バッファvtxが必要。
 	float Distance(const Vector3f &p,const Vector3fv &vtx)const
 	{
-		return Distance_PointTriangle(
+		return float(Distance_PointTriangle(
 			p,
 			vtx[vertex[0]],
 			vtx[vertex[1]]-vtx[vertex[0]],
-			vtx[vertex[2]]-vtx[vertex[0]]);
+			vtx[vertex[2]]-vtx[vertex[0]]));
 	}
 };
 typedef std::vector<Triangle> Trianglev;
@@ -300,9 +300,9 @@ public:
 	//共有頂点があるか
 	bool LinkedVertex(const Face &f)const
 	{
-		for(int i=0;i<vertex.size();i++)
+		for(size_t i=0;i<vertex.size();i++)
 		{
-			for(int j=0;j<f.vertex.size();j++)
+			for(size_t j=0;j<f.vertex.size();j++)
 			{
 				if(vertex[i]==f.vertex[j])
 					return true;
@@ -314,8 +314,8 @@ public:
 	
 	bool HasVertex(int v)const
 	{
-		int nv=vertex.size();
-		for(int i=0;i<nv;i++)
+		size_t nv=vertex.size();
+		for(size_t i=0;i<nv;i++)
 			if(vertex[i]==v)return true;
 		
 		return false;
@@ -324,7 +324,7 @@ public:
 	//三角形に分解したときの数を返す。
 	int GetTriangleNumber()const
 	{
-		int sz=vertex.size();
+		size_t sz=vertex.size();
 		if(sz==3)return 1;
 		if(sz==4)return 2;
 		return 0;
@@ -342,7 +342,7 @@ public:
 	//追加した数を返す。
 	int MakeTriangles(Trianglev &triangles)const
 	{
-		int sz=vertex.size();
+		size_t sz=vertex.size();
 		//三角形面を作る。
 		if(sz==3)
 		{
@@ -431,11 +431,11 @@ public:
 	}
 	
 	//頂点の平均位置
-	Vector3f M(Vector3fv &_v)
+	Vector3f M(Vector3fv &_v)const
 	{
 		Vector3f m=_v[vertex[0]];
-		int nv=vertex.size();
-		for(int i=1;i<nv;i++)
+		size_t nv=vertex.size();
+		for(size_t i=1;i<nv;i++)
 		{
 			m+=_v[vertex[i]];
 		}
@@ -463,11 +463,11 @@ public:
 			return;
 		
 		float sum=0;
-		for(int i=0;i<weight.size();i++)
+		for(size_t i=0;i<weight.size();i++)
 		{
 			sum+=weight[i];
 		}
-		for(int i=0;i<weight.size();i++)
+		for(size_t i=0;i<weight.size();i++)
 		{
 			weight[i]/=sum;
 		}
@@ -497,11 +497,11 @@ public:
 	{
 		material=_triangles[0].material;
 		
-		int fsz=_triangles.size();
+		size_t fsz=_triangles.size();
 		vertex.resize(fsz*3);
-		for(int i=0;i<fsz;i++)
+		for(size_t i=0;i<fsz;i++)
 		{
-			for(int j=0;j<3;j++)
+			for(size_t j=0;j<3;j++)
 			{
 				vertex[i*3+j]=_vertices[_triangles[i].vertex[j]];
 			}
@@ -512,9 +512,9 @@ public:
 			if(istexture)
 			{
 				uv.resize(fsz*3);
-				for(int i=0;i<fsz;i++)
+				for(size_t i=0;i<fsz;i++)
 				{
-					for(int j=0;j<3;j++)
+					for(size_t j=0;j<3;j++)
 					{
 						uv[i*3+j]=_triangles[i].uv[j];
 					}
@@ -642,10 +642,10 @@ public:
 	//戻り値は追加した数
 	int MakeTriangles(Trianglev &tv)
 	{
-		int fsz=faces.size();
+		size_t fsz=faces.size();
 		tv.reserve(fsz);
 		int appended=0;
-		for(int i=0;i<fsz;++i)
+		for(size_t i=0;i<fsz;++i)
 		{
 			appended+=faces[i].MakeTriangles(tv);
 		}
@@ -657,10 +657,10 @@ public:
 	//戻り値は追加した数
 	int MakeEdges(Edgev &ev)
 	{
-		int fsz=faces.size();
+		size_t fsz=faces.size();
 		ev.reserve(fsz);
 		int appended=0;
-		for(int i=0;i<fsz;++i)
+		for(size_t i=0;i<fsz;++i)
 		{
 			appended+=faces[i].MakeEdges(ev);
 		}
@@ -681,9 +681,9 @@ public:
 		
 		//三角形
 		int maxmat=-1;
-		int tsz=tv.size();
-		int esz=ev.size();
-		for(int i=0;i<tsz;++i)
+		size_t tsz=tv.size();
+		size_t esz=ev.size();
+		for(size_t i=0;i<tsz;++i)
 		{
 			if(tv[i].material>maxmat)maxmat=tv[i].material;
 		}
@@ -691,7 +691,7 @@ public:
 		for(int i=-1;i<=maxmat;++i)
 		{
 			Trianglev tvm;
-			for(int j=0;j<tsz;++j)
+			for(size_t j=0;j<tsz;++j)
 			{
 				if(tv[j].material==i)
 				{
@@ -703,7 +703,7 @@ public:
 		
 		//辺
 		maxmat=-1;
-		for(int i=0;i<esz;++i)
+		for(size_t i=0;i<esz;++i)
 		{
 			if(ev[i].material>maxmat)maxmat=ev[i].material;
 		}
@@ -711,7 +711,7 @@ public:
 		for(int i=-1;i<=maxmat;++i)
 		{
 			Edgev evm;
-			for(int j=0;j<esz;++j)
+			for(size_t j=0;j<esz;++j)
 			{
 				if(ev[j].material==i)
 				{
@@ -727,17 +727,17 @@ public:
 	//結果をresultに追加する
 	int SplitByGroup(std::vector<Mesh> &result)const
 	{
-		int fsz=faces.size();
+		size_t fsz=faces.size();
 		//int vsz=vertex.size();
 		//どのグループに属するかをマーキングする
 		intv mark;
 		mark.resize(fsz);
-		for(int i=0;i<fsz;i++)
+		for(size_t i=0;i<fsz;i++)
 		{
 			mark[i]=-1;
 		}
 		int groupID=0;
-		for(int i=0;i<fsz;i++)
+		for(size_t i=0;i<fsz;i++)
 		{
 			int n=mark[i];
 			if(n==-1)
@@ -746,7 +746,7 @@ public:
 				mark[i]=n;
 				groupID++;
 			}
-			for(int j=i+1;j<fsz;j++)
+			for(size_t j=i+1;j<fsz;j++)
 			{
 				//iとjが共有頂点をもっているか
 				if(faces[i].LinkedVertex(faces[j]))
@@ -756,7 +756,7 @@ public:
 					else//マークを張り替える
 					{
 						int m=mark[j];
-						for(int k=0;k<fsz;k++)
+						for(size_t k=0;k<fsz;k++)
 							if(mark[k]==m)
 								mark[k]=n;
 					}
@@ -770,7 +770,7 @@ public:
 			mesh.vertex=vertex;
 			mesh.name=name;//とりあえず同じ名前をつける
 			
-			for(int j=0;j<fsz;j++)
+			for(size_t j=0;j<fsz;j++)
 			{
 				if(mark[j]==i)
 					mesh.faces.push_back(faces[j]);
@@ -791,9 +791,9 @@ public:
 		iipairv exceptedg;
 		
 		int ineg=0,ipos=0;
-		int tsz=t.size();
+		size_t tsz=t.size();
 		
-		for(int i=0;i<tsz;i++)
+		for(size_t i=0;i<tsz;i++)
 		{
 			int res=t[i].RayZ(p,vertex,exceptvtx,exceptedg);
 			if(res==1)ipos++;
@@ -809,9 +809,9 @@ public:
 	//メッシュ内部の点に対する距離
 	float InsideDistance(const Trianglev &t,const Vector3f &p)const
 	{
-		int tsz=t.size();
+		size_t tsz=t.size();
 		float min=10000;
-		for(int i=0;i<tsz;i++)
+		for(size_t i=0;i<tsz;i++)
 		{
 			float res=t[i].Distance(p,vertex);
 			if(res>0&&res<min)
@@ -825,14 +825,14 @@ public:
 	//バウンディングボックスを求める
 	//普通の点列のやつではなくて、
 	//面や辺に実際に使われている頂点のみを対象とする
-	int BoundingBox(Rect3f &r)
+	int BoundingBox(Rect3f &r)const
 	{
 		Vector3fv v;
 		v.reserve(vertex.size());
-		int fsz=faces.size();
-		for(int i=0;i<fsz;i++)
+		size_t fsz=faces.size();
+		for(size_t i=0;i<fsz;i++)
 		{
-			for(int j=0;j<faces[i].vertex.size();j++)
+			for(size_t j=0;j<faces[i].vertex.size();j++)
 			{
 				v.push_back(vertex[faces[i].vertex[j]]);
 			}
@@ -876,7 +876,7 @@ public:
 	//座標割り当て済みの三角形群を作る
 	void MakeTriangleList(Materialv &materials)
 	{
-		int sz=classified_triangles.size();
+		size_t sz=classified_triangles.size();
 		transformed_triangles.resize(sz);
 		int i=0;
 		for(TrianglevlItr itr=classified_triangles.begin();itr!=classified_triangles.end();++itr,++i)
@@ -886,44 +886,44 @@ public:
 	}
 	
 	//vertex id に a,bをもつ辺を見つける
-	int FindEdge(int a,int b,iipairv &edge)
+	int FindEdge(int a,int b,iipairv &edge)const
 	{
-		int ne=edge.size();
+		size_t ne=edge.size();
 		if(a<b)
 		{
-			for(int i=0;i<ne;i++)
+			for(size_t i=0;i<ne;i++)
 			{
 				if((edge[i].first==a)&&(edge[i].second==b))
-					return i+1;
+					return int(i+1);
 			}
 		}
 		if(a>b)
 		{
-			for(int i=0;i<ne;i++)
+			for(size_t i=0;i<ne;i++)
 			{
 				if((edge[i].first==b)&&(edge[i].second==a))
-					return -(i+1);
+					return -int(i+1);
 			}
 		}
 		return 0;
 	}
 	//
-	int EdgePrev(int n,int ne,iipairv &edge)
+	int EdgePrev(int n,size_t ne,iipairv &edge)const
 	{
 		return (n>0)?edge[n-1].first:edge[(-n)-1+ne].second;
 	}
-	int EdgeCenter(int n,iipairv &edge)
+	int EdgeCenter(int n,iipairv &edge)const
 	{
 		return edge[abs(n)-1].second;
 	}
 	
-	void FindFaceFromVertex(int v,intv &f)
+	void FindFaceFromVertex(int v,intv &f)const
 	{
-		int nf=faces.size();
-		for(int i=0;i<nf;i++)
+		size_t nf=faces.size();
+		for(size_t i=0;i<nf;i++)
 		{
 			if(faces[i].HasVertex(v))
-				f.push_back(i);
+				f.push_back(int(i));
 		}
 	}
 	
@@ -936,12 +936,12 @@ public:
 		iipairv edge;
 		Vector3iv edgerecord;//エッジ番号を持った面
 		
-		int nf=faces.size();
-		int nv=vertex.size();
+		size_t nf=faces.size();
+		size_t nv=vertex.size();
 		
 		edgerecord.reserve(nf);
 		
-		for(int i=0;i<nf;i++)
+		for(size_t i=0;i<nf;i++)
 		{
 			if(faces[i].vertex.size()!=3)
 				return -1;
@@ -956,10 +956,10 @@ public:
 				edge.push_back(iipair(v[2],v[0]));
 		}
 		
-		int ne=edge.size();
+		size_t ne=edge.size();
 		
 		//三角形に辺のidをもたせる
-		for(int i=0;i<nf;i++)
+		for(size_t i=0;i<nf;i++)
 		{
 			const Face &fc=faces[i];
 			edgerecord.push_back(Vector3i(
@@ -970,18 +970,18 @@ public:
 		}
 		
 		//辺の中間点をとる
-		for(int i=0;i<ne;i++)
+		for(size_t i=0;i<ne;i++)
 		{
 			iipair e=edge[i];
 			Vector3f v=(vertex[e.first]+vertex[e.second])*0.5;
 			vertex.push_back(v);
-			edge[i].second=nv+i;
-			e.first=nv+i;
+			edge[i].second=int(nv+i);
+			e.first=int(nv+i);
 			edge.push_back(e);
 		}
 		
 		//面の中心をとる
-		for(int i=0;i<nf;i++)
+		for(size_t i=0;i<nf;i++)
 		{
 			const Vector3i &tfc=edgerecord[i];
 			int p1,p2,p3;
@@ -1030,13 +1030,13 @@ public:
 	{
 		vertex=mesh.vertex;
 
-		int nf=mesh.faces.size();
+		size_t nf=mesh.faces.size();
 		//int nv=mesh.vertex.size();
 		
 		faces.reserve(nf);
 		edges.reserve(nf*4);
 		
-		for(int i=0;i<nf;i++)
+		for(size_t i=0;i<nf;i++)
 		{
 			AppendFace(mesh.faces[i]);
 		}
@@ -1048,23 +1048,23 @@ public:
 	//面を追加する
 	void AppendFace(Face &_face)
 	{
-		int nv=_face.vertex.size();
-		int ne=edges.size();
-		int nf=faces.size();
+		size_t nv=_face.vertex.size();
+		size_t ne=edges.size();
+		size_t nf=faces.size();
 		f4eb f;
 		bool hasuv=!_face.uv.empty();
-		f.edge=ne;
+		f.edge=int(ne);
 		f.material=_face.material;
 		faces.push_back(f);
-		for(int i=0;i<nv;i++)
+		for(size_t i=0;i<nv;i++)
 		{
 			e4eb e;
 			e.vertex[0]=_face.vertex[i];
 			e.vertex[1]=_face.vertex[(i+1)%nv];
-			e.Prev()=(i+nv-1)%nv+ne;
-			e.Next()=(i+1)%nv+ne;
-			e.Face()=nf;
-			e.Back()=i+ne;
+			e.Prev()=int(i+nv-1)%int(nv)+int(ne);
+			e.Next()=int(i+1)%int(nv)+int(ne);
+			e.Face()=int(nf);
+			e.Back()=int(i+ne);
 			
 			if(hasuv)
 			{
@@ -1084,15 +1084,15 @@ public:
 	//裏エッジとのリンクを作る
 	void LinkBackEdge()
 	{
-		int ne=edges.size();
-		for(int i=0;i<ne;i++)
+		size_t ne=edges.size();
+		for(size_t i=0;i<ne;i++)
 		{
-			for(int j=i+1;j<ne;j++)
+			for(size_t j=i+1;j<ne;j++)
 			{
 				if(edges[i].IsBackEdge(edges[j]))
 				{
-					edges[i].Back()=j;
-					edges[j].Back()=i;
+					edges[i].Back()=int(j);
+					edges[j].Back()=int(i);
 				}
 			}
 		}
@@ -1103,25 +1103,25 @@ public:
 	// 単エッジ化したときの番号は0から振り、-1は無効エッジとする
 	int ValidateEdge()
 	{
-		int ne=edges.size();
+		size_t ne=edges.size();
 		validedge.clear();
 		validedge.reserve(ne);
-		for(int i=0,k=0;i<ne;i++)
+		for(size_t i=0,k=0;i<ne;i++)
 		{
 			edges[i].validid=-1;
 			if(HasBack(i))
 			{
 				if(IsAscendingOrder(i))
 				{
-					validedge.push_back(i);
-					edges[i].validid=k;
+					validedge.push_back(int(i));
+					edges[i].validid=int(k);
 					k++;
 				}
 			}
 			else
 			{
-				validedge.push_back(i);
-				edges[i].validid=k;
+				validedge.push_back(int(i));
+				edges[i].validid=int(k);
 				k++;
 			}
 		}
@@ -1209,18 +1209,18 @@ public:
 		return false;
 	}
 	//対となる裏エッジがあるか
-	bool HasBack(int e)const
+	bool HasBack(size_t e)const
 	{
 		return edges[e].Back()!=e;
 	}
 	//エッジが正方向か
-	bool IsAscendingOrder(int e)const
+	bool IsAscendingOrder(size_t e)const
 	{
 		return edges[e].vertex[0]<edges[e].vertex[1];
 	}
 	
 	//面の法線を返す
-	Vector3f FaceNormal(int f)const
+	Vector3f FaceNormal(size_t f)const
 	{
 		return FaceNormal(faces[f]);
 	}
@@ -1229,8 +1229,8 @@ public:
 		intv vid;
 		FindVertexFromFace(face,vid);
 		Vector3f n(0,0,0);
-		int nv=vid.size();
-		for(int i=0;i<nv;i++)
+		size_t nv=vid.size();
+		for(size_t i=0;i<nv;i++)
 		{
 			n+=TriangleNormal(vertex[vid[i]],vertex[vid[(i+1)%nv]],vertex[vid[(i+2)%nv]]);
 		}
@@ -1253,11 +1253,11 @@ public:
 	//a,bを頂点にもつ辺を探しIDを返す
 	int FindEdgeID(int a,int b)const
 	{
-		int ne=edges.size();
-		for(int i=0;i<ne;i++)
+		size_t ne=edges.size();
+		for(size_t i=0;i<ne;i++)
 		{
-			if(edges[i].HasEdge(a,b))return i;
-			if(edges[i].HasEdge(b,a))return i;
+			if(edges[i].HasEdge(a,b))return int(i);
+			if(edges[i].HasEdge(b,a))return int(i);
 		}
 		return -1;
 	}
@@ -1265,11 +1265,11 @@ public:
 	//a,bの順で頂点をもつ辺をさがし、IDを返す
 	int FindEdgeOrderedID(int a,int b)const
 	{
-		int ne=edges.size();
+		size_t ne=edges.size();
 		//int id=-1;
-		for(int i=0;i<ne;i++)
+		for(size_t i=0;i<ne;i++)
 		{
-			if(edges[i].HasEdge(a,b)){return i;}
+			if(edges[i].HasEdge(a,b)){return int(i);}
 			if(edges[i].HasEdge(b,a))
 			{
 				if(HasBack(i))
@@ -1284,13 +1284,13 @@ public:
 	//頂点vをもつ辺をさがす(複数)
 	void FindEdgeFromVertex(int v,intv &e)const
 	{
-		int ne=edges.size();
-		for(int i=0;i<ne;i++)
+		size_t ne=edges.size();
+		for(size_t i=0;i<ne;i++)
 		{
 			if(edges[i].IsValid())
 			{
 				if(edges[i].HasVertex(v))
-					e.push_back(i);
+					e.push_back(int(i));
 			}
 		}
 	}
@@ -1298,11 +1298,11 @@ public:
 	//頂点vをもつ面をさがす(複数)
 	void FindFaceFromVertex(int v,intv &f)const
 	{
-		int nf=faces.size();
-		for(int i=0;i<nf;i++)
+		size_t nf=faces.size();
+		for(size_t i=0;i<nf;i++)
 		{
 			if(HasVertex(faces[i],v))
-				f.push_back(i);
+				f.push_back(int(i));
 		}
 	}
 	

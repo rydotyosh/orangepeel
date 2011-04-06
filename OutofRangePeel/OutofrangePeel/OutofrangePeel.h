@@ -42,7 +42,7 @@ public:
 	{
 		simplified.clear();
 
-		double dist=0.005;
+		double dist=0.002;
 
 		for(size_t i=0;i<record.size();++i)
 		{
@@ -53,6 +53,25 @@ public:
 			}
 			Vector3 p = (record[i]+record[i-1])*0.5;
 			if(simplified.back().Dist2(p)<dist)continue;
+			//check cross
+			if(simplified.size()>2)
+			{
+				const Vector3 &bk=simplified.back();
+				bool crs=false;
+				for(size_t k=1;k<simplified.size()-1;++k)
+				{
+					const Vector3 &a=simplified[k-1];
+					const Vector3 &b=simplified[k];
+					Vector3 cross;
+					if(Rydot::Spherical_Intersection_ArcArc(
+						a,b,bk,p, cross))
+					{
+						crs=true;
+						break;
+					}
+				}
+				if(crs)continue;
+			}
 			simplified.push_back(p);
 		}
 		if(!record.empty())
@@ -367,13 +386,10 @@ private:
 					coll)
 					)
 				{
-					glPointSize(10);
-					glColor3f(1,0,0);
-					glBegin(GL_POINTS);
-					glVertex3f(coll.x, coll.y, coll.z);
-					glEnd();
+					glColor3f(0,1,0);
 					if(pdown)
 					{
+						glColor3f(1,0,0);
 						size_t v0 = m.faces[i].vertex[0];
 						size_t v1 = m.faces[i].vertex[1];
 						size_t v2 = m.faces[i].vertex[2];
@@ -387,6 +403,10 @@ private:
 						strokes.back().Add(originalVertices[v0]*(1-coef.x-coef.y)+originalVertices[v2]*coef.x+originalVertices[v1]*coef.y);
 						strokes.back().Simplify();
 					}
+					glPointSize(10);
+					glBegin(GL_POINTS);
+					glVertex3f(coll.x, coll.y, coll.z);
+					glEnd();
 					break;
 				}
 			}
@@ -477,7 +497,7 @@ private:
 
 	void Resize(int width, int height)
 	{
-		v.SetView(Rect2(0,0,width,height));
+		v.SetView(Rect2(0,0,float(width),float(height)));
 		v.Apply();
 	}
 };

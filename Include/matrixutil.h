@@ -152,8 +152,8 @@ int BoundingBox(const std::vector<Vector3<T> > &p,Rect3<T> &out)
 {
 	if(p.empty())return -1;
 	out.p1=p[0];out.p2=p[0];
-	int sz=p.size();
-	for(int i=1;i<sz;++i)
+	size_t sz=p.size();
+	for(size_t i=1;i<sz;++i)
 	{
 		out.Insert(p[i]);
 	}
@@ -271,6 +271,67 @@ double Distance_PointTriangle(const Vector3<T> &p,const Vector3<T> &p0,const Vec
 		double t=-M.Determinant()/dA;
 		return t;
 	}
+}
+
+// 単位球上の点間の測地線距離=ラジアン角度
+template<class T>
+double Spherical_Distance(const Vector3<T> &p1, const Vector3<T> &p2)
+{
+	//p1, p2 must be normalized
+	return acos(p1.DotProd(p2));
+}
+
+// 単位球上の円と点間の測地線距離=ラジアン角度
+// p:点
+// n:円の法線
+// d:円の原点からの距離
+template<class T>
+double Spherical_Distance_PointCircle(const Vector3<T> &p, const Vector3<T> &n, double d)
+{
+	// p, n must be normalized
+	// -1 <= d <= 1
+	return abs(acos(d)-acos(p.DotProd(n)));
+}
+
+// 単位球上の直径円孤の交差
+// p1,p2:円弧1の両端点
+// q1,q2:円弧2の両端点
+// ただし、直径円弧は180度よりも小さいとする。
+// 戻り値
+// 0:交点なし
+// 1:交差
+template <class T>
+int Spherical_Intersection_ArcArc(const Vector3<T> &p1, const Vector3<T> &p2, const Vector3<T> &q1, const Vector3<T> &q2, Vector3<T> &cross)
+{
+	const double eps=1e-5;
+	// p1,p2,q1,q2 must be normalized
+	Vector3<T> np=p1.ExProd(p2).Normalize();
+	Vector3<T> nq=q1.ExProd(q2).Normalize();
+	Vector3<T> ax=np.ExProd(nq).Normalize();
+	T ap1=ax.DotProd(p1);
+	T ap2=ax.DotProd(p2);
+	if(ap1>1-eps || ap2>1-eps)
+	{
+	}
+	else if(ap1<-1+eps || ap2<-1+eps)
+	{
+		ax=-ax;
+	}
+	else if(p1.ExProd(ax).DotProd( ax.ExProd(p2) )<0)
+		return 0;
+
+	T aq1=ax.DotProd(q1);
+	T aq2=ax.DotProd(q2);
+	if(aq1>1-eps || aq2>1-eps)
+	{
+		cross=ax;
+		return 1;
+	}
+	if(q1.ExProd(ax).DotProd( ax.ExProd(q2) )<0)
+		return 0;
+
+	cross=ax;
+	return 1;
 }
 
 //CatmullRom補間を求める。

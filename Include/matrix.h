@@ -262,7 +262,7 @@ public:
 	}
 	Vector3 &Normalize()
 	{
-		const double d=sqrt(x*x+y*y+z*z);
+		const T d=sqrt(x*x+y*y+z*z);
 		if(d==0){x=1;y=0;z=0;return *this;}
 		x/=d;y/=d;z/=d;
 		return *this;

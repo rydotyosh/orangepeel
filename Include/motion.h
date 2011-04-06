@@ -256,16 +256,16 @@ public:
 	void SetPose(int nmotion,float count)
 	{
 		Motion &m=motions[nmotion];
-		int asz=m.attitudes.size();
-		int rsz=roots.size();
+		size_t asz=m.attitudes.size();
+		size_t rsz=roots.size();
 		int loop=m.loop;
 		int end=m.endframe;
-		for(int i=0;i<asz;i++)
+		for(size_t i=0;i<asz;i++)
 		{
 			Attitude &a=m.attitudes[i];
 			bones[a.link].rotation=a.Interpolate(count,loop,end);
 		}
-		for(int i=0;i<rsz;i++)
+		for(size_t i=0;i<rsz;i++)
 		{
 			bones[roots[i]].offset=m.joints[0].Interpolate(count,loop,end);
 		}
@@ -277,18 +277,18 @@ public:
 	void InterpolatePose(int nmotion,float count,float ratio)
 	{
 		Motion &m=motions[nmotion];
-		int asz=m.attitudes.size();
-		int rsz=roots.size();
+		size_t asz=m.attitudes.size();
+		size_t rsz=roots.size();
 		int loop=m.loop;
 		int end=m.endframe;
-		for(int i=0;i<asz;i++)
+		for(size_t i=0;i<asz;i++)
 		{
 			Attitude &a=m.attitudes[i];
 			bones[a.link].rotation=Quaternionf::Slerp(
 				bones[a.link].rotation,
 				a.Interpolate(count,loop,end),ratio);
 		}
-		for(int i=0;i<rsz;i++)
+		for(size_t i=0;i<rsz;i++)
 		{
 			bones[roots[i]].offset=
 				bones[roots[i]].offset*(1-ratio)+
@@ -367,7 +367,7 @@ public:
 	{
 		fprintf(f.get(),"%s\n",bones[i].name.c_str());
 
-		for(int j=0;j<bones[i].child.size();j++)
+		for(size_t j=0;j<bones[i].child.size();j++)
 		{
 			DbgBone(f,bones[i].child[j]);
 		}
