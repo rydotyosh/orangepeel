@@ -12,7 +12,7 @@ public:
 	bool Calc(
 		const std::vector<v3d> &pin,
 		std::vector<v3d> &pout,
-		std::vector<std::vector<int>> &fout)const;
+		std::vector<std::vector<int> > &fout)const;
 
 };
 

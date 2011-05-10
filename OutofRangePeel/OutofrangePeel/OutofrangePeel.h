@@ -23,10 +23,14 @@ class Stroke
 	std::vector<Vector3> record;
 	std::vector<Vector3> simplified;
 
+	double dist;
 
 
 public:
-	Stroke(){}
+	Stroke()
+	:dist(0.01)
+	{
+	}
 
 
 
@@ -43,8 +47,6 @@ public:
 	bool Simplify()
 	{
 		simplified.clear();
-
-		double dist=0.001;
 
 		for(size_t i=0;i<record.size();++i)
 		{
@@ -86,6 +88,37 @@ public:
 
 		return true;
 	}
+	
+	
+	bool Finalize()
+	{
+		// divide
+		std::vector<Vector3> tmp;
+		for(size_t i=0;i<simplified.size();++i)
+		{
+			if(i==0)
+			{
+				tmp.push_back(simplified[0]);
+				continue;
+			}
+			const Vector3 ds=simplified[i]-simplified[i-1];
+			double l=ds.Abs2();
+			if(l>dist*2.0)
+			{
+				int n=ceil(l/dist/4.0);
+				for(size_t k=0;k<n;++k)
+				{
+					tmp.push_back((simplified[i-1]+ds*(double(k+1)/(n))).Norm());
+				}
+			}
+			else
+			{
+				tmp.push_back(simplified[i]);
+			}
+		}
+		simplified=tmp;
+		return true;
+	}
 
 
 
@@ -112,7 +145,7 @@ class OrangePeel:public IGLEvents
 	std::vector<Vector3> originalVertices;
 
 	std::vector<Vector3> qhpts;
-	std::vector<std::vector<int>> qhfcs;
+	std::vector<std::vector<int> > qhfcs;
 
 	template <class T>
 	T max(const T &a, const T &b){return (a>b)?a:b;}
@@ -541,11 +574,18 @@ private:
 
 				if(pdown)
 				{
-					if(strokes.empty())strokes.push_back(Stroke());
-					if(!strokes.back().Get().empty())strokes.push_back(Stroke());
+					if(strokes.empty())
+					{
+					}
+					if(!strokes.back().Get().empty())
+					{
+						strokes.push_back(Stroke());
+					}
 				}
 				else
 				{
+					if(!strokes.empty() && !strokes.back().Get().empty())
+						strokes.back().Finalize();
 					CalcQH();
 				}
 			}

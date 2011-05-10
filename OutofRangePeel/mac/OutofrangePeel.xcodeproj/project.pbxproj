@@ -16,6 +16,8 @@
 		C94D3B4A13362ECF00B70437 /* MacMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C94D3B4313362ECF00B70437 /* MacMain.cpp */; };
 		C97AE5601335F55200CB4CD8 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97AE55F1335F55200CB4CD8 /* GLUT.framework */; };
 		C97AE5621335F55200CB4CD8 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C97AE5611335F55200CB4CD8 /* OpenGL.framework */; };
+		C99313B81379622300B3AEC0 /* QhullCalc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C99313B71379622300B3AEC0 /* QhullCalc.cpp */; };
+		C99315991379693A00B3AEC0 /* libqhullstatic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C99315981379693A00B3AEC0 /* libqhullstatic.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +45,9 @@
 		C94D3B4913362ECF00B70437 /* matrixutil.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = matrixutil.h; path = ../OutofrangePeel/matrixutil.h; sourceTree = SOURCE_ROOT; };
 		C97AE55F1335F55200CB4CD8 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		C97AE5611335F55200CB4CD8 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		C99313B61379622300B3AEC0 /* QhullCalc.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = QhullCalc.h; path = ../OutofrangePeel/QhullCalc.h; sourceTree = SOURCE_ROOT; };
+		C99313B71379622300B3AEC0 /* QhullCalc.cpp */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.cpp.cpp; name = QhullCalc.cpp; path = ../OutofrangePeel/QhullCalc.cpp; sourceTree = SOURCE_ROOT; };
+		C99315981379693A00B3AEC0 /* libqhullstatic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libqhullstatic.a; path = ../../../qhull/lib/libqhullstatic.a; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +58,7 @@
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				C97AE5601335F55200CB4CD8 /* GLUT.framework in Frameworks */,
 				C97AE5621335F55200CB4CD8 /* OpenGL.framework in Frameworks */,
+				C99315991379693A00B3AEC0 /* libqhullstatic.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -105,6 +111,7 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				C99315981379693A00B3AEC0 /* libqhullstatic.a */,
 			);
 			name = OutofrangePeel;
 			sourceTree = "<group>";
@@ -149,7 +156,9 @@
 				C94D3B4613362ECF00B70437 /* matrix.h */,
 				C94D3B4713362ECF00B70437 /* Events.h */,
 				C94D3B4813362ECF00B70437 /* MacMain.h */,
+				C99313B61379622300B3AEC0 /* QhullCalc.h */,
 				C94D3B4913362ECF00B70437 /* matrixutil.h */,
+				C99313B71379622300B3AEC0 /* QhullCalc.cpp */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -213,6 +222,7 @@
 				C94D3B1E13362E4C00B70437 /* ExtOpenGLView.m in Sources */,
 				C94D3B2013362E5A00B70437 /* MacMain.m in Sources */,
 				C94D3B4A13362ECF00B70437 /* MacMain.cpp in Sources */,
+				C99313B81379622300B3AEC0 /* QhullCalc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,6 +261,10 @@
 				GCC_PREFIX_HEADER = OutofrangePeel_Prefix.pch;
 				INFOPLIST_FILE = "OutofrangePeel-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../qhull/lib\"",
+				);
 				PRODUCT_NAME = OutofrangePeel;
 				USER_HEADER_SEARCH_PATHS = ../../Include;
 			};
@@ -266,6 +280,10 @@
 				GCC_PREFIX_HEADER = OutofrangePeel_Prefix.pch;
 				INFOPLIST_FILE = "OutofrangePeel-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../qhull/lib\"",
+				);
 				PRODUCT_NAME = OutofrangePeel;
 				USER_HEADER_SEARCH_PATHS = ../../Include;
 			};
@@ -279,7 +297,11 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = /opt/local/include;
+				HEADER_SEARCH_PATHS = (
+					../../../qhull/src,
+					/opt/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = ../../../qhull/lib;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
@@ -293,7 +315,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = /opt/local/include;
+				HEADER_SEARCH_PATHS = (
+					../../../qhull/src,
+					/opt/local/include,
+				);
+				LIBRARY_SEARCH_PATHS = ../../../qhull/lib;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
 			};

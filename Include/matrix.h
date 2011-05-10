@@ -182,9 +182,9 @@ public:
 
 //intは回転は90度ずつだけにしてほしい。
 template <>
-Vector2<int> &Vector2<int>::Rotate(const double _a)
+inline Vector2<int> &Vector2<int>::Rotate(const double _a)
 {
-	int i=((int)floor(_a*2/PI+0.5))&3;
+	const int i=((int)floor(_a*2/PI+0.5))&3;
 	return Rotate90(i);
 }
 
@@ -344,11 +344,14 @@ public:
 //とりあえずint用関数
 
 //90度ずつまわしてください。
-template<> Vector3<int> &Vector3<int>::RotateZ(const double r)
+template<>
+inline Vector3<int> &Vector3<int>::RotateZ(const double r)
 {const int i=((int)floor(r*2/PI+0.5))&3;return RotateZ90(i);}
-template<> Vector3<int> &Vector3<int>::RotateX(const double r)
+template<>
+inline Vector3<int> &Vector3<int>::RotateX(const double r)
 {const int i=((int)floor(r*2/PI+0.5))&3;return RotateX90(i);}
-template<> Vector3<int> &Vector3<int>::RotateY(const double r)
+template<>
+inline Vector3<int> &Vector3<int>::RotateY(const double r)
 {const int i=((int)floor(r*2/PI+0.5))&3;return RotateY90(i);}
 
 //出力
