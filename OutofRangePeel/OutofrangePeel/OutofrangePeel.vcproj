@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../Include"
+				AdditionalIncludeDirectories="../../Include;../../../qhull/src/;../../../qhull/src/libqhullcpp;../../../qhull/src/libqhull;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;FREEGLUT_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -116,7 +116,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../Include"
+				AdditionalIncludeDirectories="../../Include;../../../qhull/src/libqhullcpp;../../../qhull/src/libqhull;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;FREEGLUT_STATIC"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -177,6 +177,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\QhullCalc.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\WinMain.cpp"
 				>
 			</File>
@@ -192,6 +196,10 @@
 			</File>
 			<File
 				RelativePath=".\OutofrangePeel.h"
+				>
+			</File>
+			<File
+				RelativePath=".\QhullCalc.h"
 				>
 			</File>
 			<File

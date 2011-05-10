@@ -203,12 +203,17 @@ public:
 	T x,y,z;
 public:
 	Vector3(){}
-	Vector3(const T _x,const T _y,const T _z):x(_x),y(_y),z(_z){}
-	Vector3(const Vector3 &_v):x(_v.x),y(_v.y),z(_v.z){}
-	Vector3(const T *_a):x(_a[0]),y(_a[1]),z(_a[2]){}
+	template<class S>
+	Vector3(const S _x,const S _y,const S _z):x(_x),y(_y),z(_z){}
+	template<class S>
+	Vector3(const Vector3<S> &_v):x(_v.x),y(_v.y),z(_v.z){}
+	template<class S>
+	Vector3(const S *_a):x(_a[0]),y(_a[1]),z(_a[2]){}
 	//無理やり変換
-	Vector3(const Vector2<T> &_v);
-	Vector3(const Quaternion<T> &_v);
+	template<class S>
+	Vector3(const Vector2<S> &_v):x(_v.x),y(_v.y),z(0){}
+	template<class S>
+	Vector3(const Quaternion<S> &_v):x(_v.x),y(_v.y),z(_v.z){}
 
 	Vector3 &operator=(const Vector3 &_v){x=_v.x;y=_v.y;z=_v.z;return *this;}
 
@@ -654,8 +659,6 @@ std::ostream &operator<<(std::ostream &_o,const Quaternion<T> &_q)
 //ベクトルとかを無理やり他のベクトルとかに変換する。
 template<class T> Vector2<T>::Vector2(const Vector3<T> &_v):x(_v.x),y(_v.y){}
 template<class T> Vector2<T>::Vector2(const Quaternion<T> &_v):x(_v.x),y(_v.y){}
-template<class T> Vector3<T>::Vector3(const Vector2<T> &_v):x(_v.x),y(_v.y),z(0){}
-template<class T> Vector3<T>::Vector3(const Quaternion<T> &_v):x(_v.x),y(_v.y),z(_v.z){}
 template<class T> Quaternion<T>::Quaternion(const Vector2<T> &_v):x(_v.x),y(_v.y),z(0),w(0){}
 template<class T> Quaternion<T>::Quaternion(const Vector3<T> &_v):x(_v.x),y(_v.y),z(_v.z),w(0){}
 

@@ -10,6 +10,8 @@
 #include "View.h"
 #include "mesh.h"
 
+#include "QhullCalc.h"
+
 
 
 class Stroke
@@ -109,6 +111,9 @@ class OrangePeel:public IGLEvents
 	Mesh m;
 	std::vector<Vector3> originalVertices;
 
+	std::vector<Vector3> qhpts;
+	std::vector<std::vector<int>> qhfcs;
+
 	template <class T>
 	T max(const T &a, const T &b){return (a>b)?a:b;}
 
@@ -163,7 +168,7 @@ private:
 
 		v.SetView(Rect2(0,0,640,480), 45);
 		v.SetCamera(
-			Vector3(0,0,dist.get()),
+			Vector3(0.0,0.0,dist.get()),
 			Vector3(0,0,0),
 			Vector3(0,1,0));
 
@@ -234,7 +239,7 @@ private:
 			Vector3 displacement(0,0,0);
 			if(j==3)
 			{
-				displacement=Vector3(0,-0.05,0);
+				displacement=Vector3(0.,-0.05,0.);
 				//if( (i==1||i==2)&&(k==1||k==2) )
 				//{
 				//	displacement=Vector3(0,0,0);
@@ -242,10 +247,10 @@ private:
 			}
 			if(j==0)
 			{
-				displacement=Vector3(0,0.05,0);
+				displacement=Vector3(0.,0.05,0.);
 				if( (i==1||i==2)&&(k==1||k==2) )
 				{
-					displacement=Vector3(0,0.25,0);
+					displacement=Vector3(0.,0.25,0.);
 				}
 			}
 			control[a]=Vector3( i/3.0, (j-1.5)/3.0*0.95+0.5, k/3.0 )+displacement;
@@ -256,6 +261,41 @@ private:
 		m.CalcNormal();
 
 		strokes.push_back(Stroke());
+
+		CalcQH();
+	}
+
+
+
+	void CalcQH()
+	{
+		QhullCalc qh;
+		qhpts.clear();
+		qhfcs.clear();
+		std::vector<Rydot::Vector3d> vtx;
+		vtx.push_back(Rydot::Vector3d(1,1,1).Norm());
+		vtx.push_back(Rydot::Vector3d(-1,1,1).Norm());
+		vtx.push_back(Rydot::Vector3d(1,-1,1).Norm());
+		vtx.push_back(Rydot::Vector3d(1,1,-1).Norm());
+		for(size_t i=0;i<strokes.size();++i)
+		{
+			const std::vector<Vector3> &s=strokes[i].Get();
+			for(size_t k=0;k<s.size();++k)
+			{
+				vtx.push_back(Rydot::Vector3d(s[k]));
+			}
+		}
+
+		std::vector<Rydot::Vector3d> qhp;
+		qh.Calc(vtx, qhp, qhfcs);
+
+		Rydot::Rect3f bb(-1,-1,-1,1,1,1);
+		qhpts.resize(qhp.size());
+		for(size_t i=0;i<qhp.size();++i)
+		{
+			const Vector3 p(qhp[i]);
+			qhpts[i]=bb.TransformFrom(Rydot::MeshDeformer::beziercube(control, bb.TransformTo(p)));
+		}
 	}
 
 
@@ -275,11 +315,18 @@ private:
 
 		v.Apply();
 
+		glEnable(GL_BLEND);
+
 		glEnable(GL_DEPTH_TEST);
 
 		glEnable(GL_NORMALIZE);
 
 		glShadeModel(GL_SMOOTH);
+
+		glEnable(GL_POINT_SMOOTH);
+		glEnable(GL_LINE_SMOOTH);
+
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 		float light_position[4]={cos(t*0.03)*1.5,cos(t*0.005)*1,sin(t*0.03)*1.5,1};
 		glLightfv(GL_LIGHT0,GL_POSITION,light_position);
@@ -419,8 +466,25 @@ private:
 				const std::vector<Vector3> &s=strokes[i].Get();
 				for(size_t k=0;k<s.size();++k)
 				{
-					const Vector3 &r=bb.TransformFrom(Rydot::MeshDeformer::beziercube(control, bb.TransformTo(s[k])));
+					const Vector3 r=bb.TransformFrom(Rydot::MeshDeformer::beziercube(control, bb.TransformTo(s[k])));
 					glVertex3f(r.x, r.y, r.z);
+				}
+				glEnd();
+			}
+		}
+
+
+		// qhshow
+		{
+			glColor4f(1,0,0,0.5);
+			for(size_t i=0;i<qhfcs.size();++i)
+			{
+				glBegin(GL_LINE_STRIP);
+				for(size_t j=0;j<4;++j)
+				{
+					size_t k=j%3;
+					const Vector3 p(qhpts[qhfcs[i][k]]);
+					glVertex3fv(&p.x);
 				}
 				glEnd();
 			}
@@ -461,6 +525,10 @@ private:
 				{
 					if(strokes.empty())strokes.push_back(Stroke());
 					if(!strokes.back().Get().empty())strokes.push_back(Stroke());
+				}
+				else
+				{
+					CalcQH();
 				}
 			}
 		}

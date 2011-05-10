@@ -9,7 +9,9 @@
 
 #include "OutofrangePeel.h"
 
+#include "QhullCalc.h"
 
+#include <iostream>
 
 boost::shared_ptr<IGLEvents> events(new OrangePeel());
 
