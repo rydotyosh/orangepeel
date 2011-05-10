@@ -44,7 +44,7 @@ public:
 	{
 		simplified.clear();
 
-		double dist=0.002;
+		double dist=0.001;
 
 		for(size_t i=0;i<record.size();++i)
 		{
@@ -274,9 +274,9 @@ private:
 		qhfcs.clear();
 		std::vector<Rydot::Vector3d> vtx;
 		vtx.push_back(Rydot::Vector3d(1,1,1).Norm());
-		vtx.push_back(Rydot::Vector3d(-1,1,1).Norm());
-		vtx.push_back(Rydot::Vector3d(1,-1,1).Norm());
-		vtx.push_back(Rydot::Vector3d(1,1,-1).Norm());
+		vtx.push_back(Rydot::Vector3d(-1,-1,1).Norm());
+		vtx.push_back(Rydot::Vector3d(1,-1,-1).Norm());
+		vtx.push_back(Rydot::Vector3d(-1,1,-1).Norm());
 		for(size_t i=0;i<strokes.size();++i)
 		{
 			const std::vector<Vector3> &s=strokes[i].Get();
@@ -296,6 +296,23 @@ private:
 			const Vector3 p(qhp[i]);
 			qhpts[i]=bb.TransformFrom(Rydot::MeshDeformer::beziercube(control, bb.TransformTo(p)));
 		}
+
+#ifdef _WIN32
+		double v=0;
+		for(size_t i=0;i<qhfcs.size();++i)
+		{
+			const Rydot::Vector3d &a=qhp[qhfcs[i][0]];
+			const Rydot::Vector3d &b=qhp[qhfcs[i][1]];
+			const Rydot::Vector3d &c=qhp[qhfcs[i][2]];
+			double dv=b.ExProd(a).DotProd(c);
+			v+=dv;
+		}
+		v/=6.0;
+		char s[256];
+		sprintf(s,"volume:%f\n",v);
+		OutputDebugStringA(s);
+#endif
+
 	}
 
 
@@ -501,7 +518,8 @@ private:
 	{
 		//glutPostRedisplay();
 		
-		t++;
+		//t++;
+		t=20;
 	}
 
 
