@@ -306,10 +306,22 @@ int Spherical_Intersection_ArcArc(const Vector3<T> &p1, const Vector3<T> &p2, co
 	const double eps=1e-5;
 	// p1,p2,q1,q2 must be normalized
 	Vector3<T> np=p1.ExProd(p2).Normalize();
+	Vector3<T> cp=(p1+p2).Normalize();
 	Vector3<T> nq=q1.ExProd(q2).Normalize();
+	Vector3<T> cq=(q1+q2).Normalize();
 	Vector3<T> ax=np.ExProd(nq).Normalize();
 	T ap1=ax.DotProd(p1);
 	T ap2=ax.DotProd(p2);
+
+	T acp=ax.DotProd(cp);
+
+	if(acp<0)
+	{
+		ap1=-ap1;
+		ap2=-ap2;
+		ax=-ax;
+	}
+
 	if(ap1>1-eps || ap2>1-eps)
 	{
 	}
@@ -319,6 +331,13 @@ int Spherical_Intersection_ArcArc(const Vector3<T> &p1, const Vector3<T> &p2, co
 	}
 	else if(p1.ExProd(ax).DotProd( ax.ExProd(p2) )<0)
 		return 0;
+
+	T acq=ax.DotProd(cq);
+	
+	if(acq<0)
+	{
+		return 0;
+	}
 
 	T aq1=ax.DotProd(q1);
 	T aq2=ax.DotProd(q2);

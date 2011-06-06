@@ -130,6 +130,17 @@ public:
 
 
 
+class Unfold
+{
+	Unfold()
+	{
+	}
+
+
+};
+
+
+
 class OrangePeel:public IGLEvents
 {
 	typedef float Float;
@@ -295,6 +306,25 @@ private:
 
 		strokes.push_back(Stroke());
 
+		{
+		double pi=4.0*atan(1.0);
+		double R=10;
+		Stroke s;
+		for(int i=0;i<400;++i)
+		{
+			double t=(double)i/(400.0-1.0);
+			double z=cos(pi*t);
+			double ss=sin(pi*t);
+			double x=cos(2.0*pi*R*t)*ss;
+			double y=sin(2.0*pi*R*t)*ss;
+			s.Add(Vector3(x,z,y));
+		}
+		s.Simplify();
+		//s.Finalize();
+		strokes[0]=s;
+		strokes.push_back(Stroke());
+		}
+
 		CalcQH();
 	}
 
@@ -306,10 +336,10 @@ private:
 		qhpts.clear();
 		qhfcs.clear();
 		std::vector<Rydot::Vector3d> vtx;
-		vtx.push_back(Rydot::Vector3d(1,1,1).Norm());
-		vtx.push_back(Rydot::Vector3d(-1,-1,1).Norm());
-		vtx.push_back(Rydot::Vector3d(1,-1,-1).Norm());
-		vtx.push_back(Rydot::Vector3d(-1,1,-1).Norm());
+		//vtx.push_back(Rydot::Vector3d(1,1,1).Norm());
+		//vtx.push_back(Rydot::Vector3d(-1,-1,1).Norm());
+		//vtx.push_back(Rydot::Vector3d(1,-1,-1).Norm());
+		//vtx.push_back(Rydot::Vector3d(-1,1,-1).Norm());
 		for(size_t i=0;i<strokes.size();++i)
 		{
 			const std::vector<Vector3> &s=strokes[i].Get();
@@ -328,6 +358,24 @@ private:
 		{
 			const Vector3 p(qhp[i]);
 			qhpts[i]=bb.TransformFrom(Rydot::MeshDeformer::beziercube(control, bb.TransformTo(p)));
+		}
+
+		// find matching
+		std::vector<int> match(qhp.size());
+		for(size_t i=0;i<qhp.size();++i)
+		{
+			double nearest=1e10;
+			int idx=0;
+			for(size_t k=0;k<vtx.size();++k)
+			{
+				double d2=qhp[i].Dist2(vtx[k]);
+				if(d2<nearest)
+				{
+					nearest=d2;
+					idx=k;
+				}
+			}
+			match[i]=idx;
 		}
 
 #ifdef _WIN32
