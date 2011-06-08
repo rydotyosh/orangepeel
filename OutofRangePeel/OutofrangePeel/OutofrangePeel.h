@@ -130,11 +130,160 @@ public:
 
 
 
-class Unfold
+class Peel
 {
-	Unfold()
+private:
+
+	typedef Rydot::Vector3f	Vector3;
+
+	std::vector<Vector3> points;
+	std::vector<std::vector<int>> cutter;
+	std::vector<std::vector<int>> mesh;
+
+	std::vector<Vector3> splpoints;
+
+	struct Face
+	{
+		std::vector<int> coedgeIndices;
+	};
+
+	struct Coedge
+	{
+		int faceIndex;
+		int edgeIndex;
+		std::vector<int> pointIndices;
+
+		bool IsSibling(const Coedge &c)
+		{
+			if(pointIndices[0]==c.pointIndices[0] && pointIndices[1]==c.pointIndices[1] )return true;
+			if(pointIndices[0]==c.pointIndices[1] && pointIndices[1]==c.pointIndices[0] )return true;
+			return false;
+		}
+	};
+
+	struct Edge
+	{
+		std::vector<int> coedgeIndices;
+		std::vector<int> splPointIndices;
+		bool split;
+	};
+
+	std::vector<Face> faces;
+	std::vector<Coedge> coedges;
+	std::vector<Edge> edges;
+
+public:
+	Peel()
 	{
 	}
+
+
+
+	bool SetupPoints(const std::vector<Vector3> &points)
+	{
+		this->points=points;
+		return true;
+	}
+
+	bool SetupCutter(const std::vector<std::vector<int>> &cutter)
+	{
+		this->cutter=cutter;
+		return true;
+	}
+
+	bool SetupMesh(const std::vector<std::vector<int>> &mesh)
+	{
+		this->mesh=mesh;
+		return true;
+	}
+
+	bool CreateSplit()
+	{
+		faces.clear();
+		coedges.clear();
+
+		faces.resize(mesh.size());
+		coedges.resize(mesh.size()*3);
+		for(size_t i=0;i<mesh.size();++i)
+		{
+			for(int k=0;k<3;++k)
+			{
+				faces[i].coedgeIndices.push_back(i*3+k);
+				Coedge &c=coedges[i*3+k];
+				c.faceIndex=i;
+				c.pointIndices.push_back(mesh[i][k]);
+				c.pointIndices.push_back(mesh[i][(k+1)%3]);
+			}
+		}
+
+		// find sibling
+		edges.clear();
+		edges.reserve(coedges.size());
+		for(size_t i=0;i<coedges.size();++i)
+		{
+			for(size_t k=i+1;k<coedges.size();++k)
+			{
+				if(coedges[i].IsSibling(coedges[k]))
+				{
+					int eidx=edges.size();
+					edges.push_back(Edge());
+					Edge &e=edges.back();
+					e.coedgeIndices.push_back(std::min(i,k));
+					e.coedgeIndices.push_back(std::max(i,k));
+					e.split=false;
+					coedges[i].edgeIndex=eidx;
+					coedges[k].edgeIndex=eidx;
+				}
+			}
+		}
+
+		// split by cutter
+		for(size_t i=0;i<cutter.size();++i)
+		{
+			Coedge tmp;
+			tmp.pointIndices.push_back(cutter[i][0]);
+			tmp.pointIndices.push_back(cutter[i][1]);
+
+			for(size_t k=0;k<coedges.size();++k)
+			{
+				if(coedges[k].IsSibling(tmp))
+				{
+					// split
+					int eidx=coedges[k].edgeIndex;
+					if(eidx>=0)
+					{
+						Edge &e=edges[eidx];
+						coedges[e.coedgeIndices[0]].edgeIndex=-1;
+						coedges[e.coedgeIndices[1]].edgeIndex=-1;
+						e.split=true;
+					}
+					break;
+				}
+			}
+		}
+
+		// assign split points
+		splpoints.clear();
+		size_t ne=edges.size();
+		for(size_t i=0;i<ne;++i)
+		{
+			if(edges[i].split)
+			{
+				edges.push_back(Edge());
+				Edge &ei=edges[i];
+				
+
+
+			}
+
+
+		}
+
+		
+		return false;
+	}
+
+
 
 
 };
