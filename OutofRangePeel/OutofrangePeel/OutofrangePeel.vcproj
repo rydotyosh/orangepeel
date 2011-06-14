@@ -116,7 +116,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../Include;../../../qhull/src/libqhullcpp;../../../qhull/src/libqhull;"
+				AdditionalIncludeDirectories="../../Include;../../../qhull/src/;../../../qhull/src/libqhullcpp;../../../qhull/src/libqhull"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;FREEGLUT_STATIC"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
