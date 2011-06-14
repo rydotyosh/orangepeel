@@ -183,8 +183,8 @@ public:
 private:
 
 	std::vector<Vector3> points;
-	std::vector<std::vector<int>> cutter;
-	std::vector<std::vector<int>> mesh;
+	std::vector<std::vector<int> > cutter;
+	std::vector<std::vector<int> > mesh;
 
 	std::vector<Vector3> splpoints;
 
@@ -285,13 +285,13 @@ public:
 		return true;
 	}
 
-	bool SetupCutter(const std::vector<std::vector<int>> &cutter)
+	bool SetupCutter(const std::vector<std::vector<int> > &cutter)
 	{
 		this->cutter=cutter;
 		return true;
 	}
 
-	bool SetupMesh(const std::vector<std::vector<int>> &mesh)
+	bool SetupMesh(const std::vector<std::vector<int> > &mesh)
 	{
 		this->mesh=mesh;
 		return true;
@@ -376,7 +376,7 @@ public:
 		}
 
 		// [point index][]=>face index
-		std::vector<std::vector<int>> pifi(points.size());
+		std::vector<std::vector<int> > pifi(points.size());
 		for(size_t i=0;i<faces.size();++i)
 		{
 			const Face &f=faces[i];
@@ -388,7 +388,7 @@ public:
 
 		// cluster
 		// [point index][][]=>face index
-		std::vector<std::vector<std::vector<int>>> picluster(points.size());
+		std::vector<std::vector<std::vector<int> > > picluster(points.size());
 		for(size_t i=0;i<pifi.size();++i)
 		{
 			const std::vector<int> &fcs=pifi[i];
@@ -668,7 +668,7 @@ private:
 		//vtx.push_back(Rydot::Vector3d(-1,-1,1).Norm());
 		//vtx.push_back(Rydot::Vector3d(1,-1,-1).Norm());
 		//vtx.push_back(Rydot::Vector3d(-1,1,-1).Norm());
-		std::vector<std::vector<int>> cutter;
+		std::vector<std::vector<int> > cutter;
 		for(size_t i=0;i<strokes.size();++i)
 		{
 			const std::vector<Vector3> &s=strokes[i].Get();
