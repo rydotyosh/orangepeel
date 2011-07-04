@@ -134,7 +134,7 @@ public:
 
 
 
-class Peel
+class CutMesh
 {
 public:
 
@@ -180,11 +180,23 @@ public:
 		bool split;
 	};
 
+	struct Vertex
+	{
+		Vector3 point;
+
+		// sub
+		std::vector<int> faceIndices;
+		std::vector<int> edgeIndices;
+	};
+
 private:
 
-	std::vector<Vector3> points;
+	//std::vector<Vector3> points;
+	std::vector<Vertex> vertices;
 	std::vector<std::vector<int> > cutter;
 	std::vector<std::vector<int> > mesh;
+
+	std::vector<Vertex> splvertices;
 
 	std::vector<Vector3> splpoints;
 
@@ -220,10 +232,10 @@ private:
 		return r;
 	}
 
-	// returns adjacent faces from faces[fi] where belongs to points[pi]
+	// returns adjacent faces from faces[fi] where belongs to vertices[pi]
 	std::vector<int> PointFacePie(int pi, int fi)const
 	{
-		if(pi<0 || pi>=points.size())return std::vector<int>();
+		if(pi<0 || pi>=vertices.size())return std::vector<int>();
 		if(fi<0 || fi>=faces.size())return std::vector<int>();
 
 		std::vector<int> working;
@@ -254,7 +266,7 @@ private:
 
 	bool ReassignEdges(int pi, int fi, int pi2)
 	{
-		if(pi<0 || pi>=points.size())return false;
+		if(pi<0 || pi>=vertices.size())return false;
 		if(fi<0 || fi>=faces.size())return false;
 
 		const Face &f=faces[fi];
@@ -269,7 +281,7 @@ private:
 	}
 
 public:
-	Peel()
+	CutMesh()
 	{
 	}
 
@@ -281,7 +293,8 @@ public:
 
 	bool SetupPoints(const std::vector<Vector3> &points)
 	{
-		this->points=points;
+		vertices.resize(points.size());
+		for(size_t i=0;i<points.size();++i)vertices[i].point=points[i];
 		return true;
 	}
 
@@ -375,23 +388,22 @@ public:
 			}
 		}
 
-		// [point index][]=>face index
-		std::vector<std::vector<int> > pifi(points.size());
+		// setup vertex invref to face index
 		for(size_t i=0;i<faces.size();++i)
 		{
 			const Face &f=faces[i];
 			for(size_t j=0;j<f.pointIndices.size();++j)
 			{
-				pifi[f.pointIndices[j]].push_back(i);
+				vertices[f.pointIndices[j]].faceIndices.push_back(i);
 			}
 		}
 
 		// cluster
 		// [point index][][]=>face index
-		std::vector<std::vector<std::vector<int> > > picluster(points.size());
-		for(size_t i=0;i<pifi.size();++i)
+		std::vector<std::vector<std::vector<int> > > picluster(vertices.size());
+		for(size_t i=0;i<vertices.size();++i)
 		{
-			const std::vector<int> &fcs=pifi[i];
+			const std::vector<int> &fcs=vertices[i].faceIndices;
 			boost::unordered_set<int> used;
 			for(size_t j=0;j<fcs.size();++j)
 			{
@@ -406,15 +418,20 @@ public:
 		}
 
 		// assign split points
-		splpoints=points;
+		splvertices.resize(vertices.size());
+		for(size_t i=0;i<vertices.size();++i)
+		{
+			splvertices[i].point=vertices[i].point;
+		}
 		for(size_t i=0;i<picluster.size();++i)
 		{
 			if(picluster[i].size()>1)
 			{
 				for(size_t k=1;k<picluster[i].size();++k)
 				{
-					int splidx=splpoints.size();
-					splpoints.push_back(points[i]);
+					int splidx=splvertices.size();
+					splvertices.push_back(vertices[i]);
+					splvertices.back().faceIndices.clear();
 					for(size_t a=0;a<picluster[i][k].size();++a)
 					{
 						ReassignEdges(i, picluster[i][k][a], splidx);
@@ -442,6 +459,13 @@ public:
 			}
 		}
 
+		// convert splpoint
+		splpoints.resize(splvertices.size());
+		for(size_t i=0;i<splvertices.size();++i)
+		{
+			splpoints[i]=splvertices[i].point;
+		}
+
 		return false;
 	}
 
@@ -461,6 +485,285 @@ public:
 
 
 
+
+};
+
+
+class Peel
+{
+public:
+	typedef Rydot::Vector3f	Vector3;
+
+	struct Face
+	{
+		std::vector<int> vertexIndices;
+
+		// sub
+		Vector3 normalCache;
+		Vector3 centerCache;
+	};
+
+	struct Vertex
+	{
+		Vector3 orgPoint;
+		Vector3 velocity;
+		Vector3 moved;
+
+		// sub
+		std::vector<int> faceIndices;
+	};
+
+	struct Edge
+	{
+		std::vector<int> vertexIndices;
+		std::vector<int> faceIndices;
+
+		double orgLength;
+	};
+
+	std::vector<Vertex> vertices;
+	std::vector<Face> faces;
+	std::vector<Edge> edges;
+
+public:
+	bool SetupVertices(const std::vector<Vector3> &points)
+	{
+		this->vertices.resize(points.size());
+		for(size_t i=0;i<points.size();++i)
+		{
+			this->vertices[i].orgPoint=points[i];
+			this->vertices[i].moved=points[i];
+			this->vertices[i].velocity=Vector3(0,0,0);
+		}
+		return true;
+	}
+
+	bool SetupFaces(const std::vector<CutMesh::Face> &faces)
+	{
+		this->faces.resize(faces.size());
+		for(size_t i=0;i<faces.size();++i)
+		{
+			const std::vector<int> &fv=faces[i].splpointIndices;
+			this->faces[i].vertexIndices=fv;
+		}
+		return true;
+	}
+
+	int FindSameEdge(int v0,int v1)
+	{
+		for(int k=0;k<edges.size();++k)
+		{
+			if(edges[k].vertexIndices[0]==v0 && edges[k].vertexIndices[1]==v1)
+				return k;
+		}
+		Edge e;
+		e.vertexIndices.push_back(v0);
+		e.vertexIndices.push_back(v1);
+		e.orgLength=vertices[v0].orgPoint.Dist(vertices[v1].orgPoint);
+		edges.push_back(e);
+		return edges.size()-1;
+	}
+
+	bool SetupInvRef()
+	{
+		edges.clear();
+
+		for(size_t i=0;i<faces.size();++i)
+		{
+			const std::vector<int> &vis=faces[i].vertexIndices;
+			for(size_t j=0;j<vis.size();++j)
+			{
+				vertices[vis[j]].faceIndices.push_back(i);
+			}
+			for(size_t j=0;j<vis.size();++j)
+			{
+				size_t jn=(j+1)%vis.size();
+				int v0=std::min(vis[j],vis[jn]);
+				int v1=std::max(vis[j],vis[jn]);
+				int idx=FindSameEdge(v0,v1);
+				edges[idx].faceIndices.push_back(i);
+			}
+		}
+		return true;
+	}
+
+private:
+	void FaceCenter(int fi)
+	{
+		const std::vector<int> &fv=faces[fi].vertexIndices;
+		Vector3 v(0,0,0);
+		for(size_t i=1;i<fv.size();++i)
+		{
+			v+=vertices[fv[i]].moved;
+		}
+		v*=1.0/(fv.size());
+		faces[fi].centerCache=v;
+	}
+
+	void FaceNormal(int fi)
+	{
+		const std::vector<int> &fv=faces[fi].vertexIndices;
+		Vector3 a=vertices[fv[0]].moved-vertices[fv[1]].moved;
+		Vector3 b=vertices[fv[2]].moved-vertices[fv[1]].moved;
+		faces[fi].normalCache=b.ExProd(a).Norm();
+	}
+
+	Vector3 PseudoNormalOfVertex(int vi)
+	{
+		const std::vector<int> &vf=vertices[vi].faceIndices;
+		Vector3 v(0,0,0);
+		for(size_t i=0;i<vf.size();++i)
+		{
+			v+=faces[vf[i]].normalCache;
+		}
+		return v.Norm();
+	}
+	Vector3 PseudoCenterOfVertex(int vi)
+	{
+		const std::vector<int> &vf=vertices[vi].faceIndices;
+		Vector3 v(0,0,0);
+		for(size_t i=0;i<vf.size();++i)
+		{
+			v+=faces[vf[i]].centerCache;
+		}
+		return v*(1.0/vf.size());
+	}
+
+	Vector3 PseudoNormalOfEdge(int ei)
+	{
+		const std::vector<int> &ef=edges[ei].faceIndices;
+		Vector3 v(0,0,0);
+		for(size_t i=0;i<ef.size();++i)
+		{
+			v+=faces[ef[i]].centerCache;
+		}
+		return v*(1.0/ef.size());
+	}
+
+	int DiagVertex(int fi, int ei)
+	{
+		std::vector<int> res=faces[fi].vertexIndices;
+		const std::vector<int> &ve=edges[ei].vertexIndices;
+		for(int i=0;i<ve.size();++i)
+		{
+			std::remove(res.begin(),res.end(),ve[i]);
+		}
+		return res[0];
+	}
+
+	std::vector<int> DiagVerticesOfEdge(int ei)
+	{
+		const std::vector<int> &ef=edges[ei].faceIndices;
+		if(ef.size()!=2)return std::vector<int>();
+
+		std::vector<int> res;
+		res.push_back(DiagVertex(ef[0],ei));
+		res.push_back(DiagVertex(ef[1],ei));
+		return res;
+	}
+
+	double rnd()
+	{
+		return rand()/32767.0;
+	}
+
+	double satu(double x)
+	{
+		if(x<-1)return -1;
+		if(x>1)return 1;
+		return x;
+	}
+
+public:
+	bool Proceed()
+	{
+		for(int i=0;i<faces.size();++i)FaceNormal(i);
+		for(int i=0;i<faces.size();++i)FaceCenter(i);
+
+		for(int i=0;i<vertices.size();++i)
+		{
+			vertices[i].velocity*=0.50;
+		}
+
+		double r=0.1;
+		for(int i=0;i<edges.size();++i)
+		{
+			std::vector<int> dv=DiagVerticesOfEdge(i);
+
+			if(dv.size()!=2)continue;
+
+			//Vector3 n1=faces[edges[i].faceIndices[0]].normalCache;
+			//Vector3 n0=faces[edges[i].faceIndices[0]].normalCache;
+
+			//double h0=vertices[edges[i].vertexIndices[0]].moved.DotProd(n0);
+			//double h1=vertices[edges[i].vertexIndices[1]].moved.DotProd(n1);
+
+			//double hv0=vertices[dv[0]].moved.DotProd(n0);
+			//double hv1=vertices[dv[1]].moved.DotProd(n1);
+
+			//double dh0=(h0-hv0);
+			//double dh1=(h1-hv1);
+
+			//vertices[dv[0]].velocity+=n0*(dh0*r);
+			//vertices[dv[1]].velocity+=n1*(dh1*r);
+
+			Vertex &v0=vertices[dv[0]];
+			Vertex &v1=vertices[dv[1]];
+
+			Vector3 d=v1.moved-v0.moved;
+			Vector3 dn=d.Norm();
+
+			v0.velocity-=dn*r;
+			v1.velocity+=dn*r;
+
+			
+		}
+
+		//double rr=0.1;
+		//for(int i=0;i<faces.size();++i)
+		//{
+		//	Vector3 n=faces[i].normalCache;
+		//	for(int j=0;j<faces[i].vertexIndices.size();++j)
+		//	{
+		//		vertices[faces[i].vertexIndices[j]].velocity+=n*rr;
+		//	}
+		//}
+
+		double k=1.0;
+		for(int i=0;i<edges.size();++i)
+		{
+			const Edge &e=edges[i];
+			Vertex &v0=vertices[e.vertexIndices[0]];
+			Vertex &v1=vertices[e.vertexIndices[1]];
+			Vector3 dv=v1.moved-v0.moved;
+			double dl=dv.Abs()-e.orgLength;
+			Vector3 dvn=dv.Norm();
+			v0.velocity+=dvn*(dl*k);
+			v1.velocity-=dvn*(dl*k);
+		}
+
+		double ratio=0.5;
+		for(int i=0;i<vertices.size();++i)
+		{
+			vertices[i].moved+=vertices[i].velocity*ratio;
+		}
+
+		Vector3 v(0,0,0);
+		for(int i=0;i<vertices.size();++i)
+		{
+			v+=vertices[i].moved;
+		}
+		v*=(1.0/vertices.size());//g
+		for(int i=0;i<vertices.size();++i)
+		{
+			vertices[i].moved-=v;
+		}
+
+
+
+
+		return true;
+	}
 
 };
 
@@ -511,7 +814,8 @@ class OrangePeel:public IGLEvents
 	std::vector<Vector3> control;
 
 
-	Peel pl;
+	CutMesh pl;
+	Peel pe;
 
 
 public:
@@ -636,11 +940,11 @@ private:
 
 		{
 		double pi=4.0*atan(1.0);
-		double R=10;
+		double R=3;
 		Stroke s;
-		for(int i=0;i<100;++i)
+		for(int i=0;i<30;++i)
 		{
-			double t=(double)i/(100.0-1.0);
+			double t=(double)i/(30.0-1.0);
 			double z=cos(pi*t);
 			double ss=sin(pi*t);
 			double x=cos(2.0*pi*R*t)*ss;
@@ -721,7 +1025,17 @@ private:
 		pl.SetupPoints(qhpts);
 		pl.CreateSplit();
 
-		pl.OutDot();
+		//pl.OutDot();
+
+		//
+		pe.SetupVertices(pl.GetSplPoints());
+		pe.SetupFaces(pl.GetFaces());
+		pe.SetupInvRef();
+
+		for(int i=0;i<1;++i)
+		{
+			pe.Proceed();
+		}
 
 
 #ifdef _WIN32
@@ -860,20 +1174,39 @@ private:
 		glEnd();
 		glDisable(GL_LIGHTING);
 
-		const std::vector<Peel::Face> &fcs=pl.GetFaces();
-		const std::vector<Vector3> &pts=pl.GetSplPoints();
+		//const std::vector<CutMesh::Face> &fcs=pl.GetFaces();
+		//const std::vector<Vector3> &pts=pl.GetSplPoints();
+		//glBegin(GL_TRIANGLES);
+		//for(size_t i=0;i<fcs.size();++i)
+		//{
+		//	for(size_t v=0;v<3;++v)
+		//	{
+		//		glColor3f((i%10)/10.0,((i/10)%10)/10.0,0);
+		//		int idx=fcs[i].splpointIndices[2-v];
+		//		Vector3 p=pts[idx]+Vector3(0.0,0.0,idx*0.001);
+		//		glVertex3fv(&(p.x));
+		//	}
+		//}
+		//glEnd();
+
+		const std::vector<Peel::Face> &fcs=pe.faces;
+		const std::vector<Peel::Vertex> &vts=pe.vertices;
 		glBegin(GL_TRIANGLES);
 		for(size_t i=0;i<fcs.size();++i)
 		{
 			for(size_t v=0;v<3;++v)
 			{
 				glColor3f((i%10)/10.0,((i/10)%10)/10.0,0);
-				int idx=fcs[i].splpointIndices[2-v];
-				Vector3 p=pts[idx]+Vector3(0.0,0.0,idx*0.001);
+				int idx=fcs[i].vertexIndices[2-v];
+				Vector3 p=vts[idx].moved+Vector3(0.0,0.0,0.0);
 				glVertex3fv(&(p.x));
 			}
 		}
 		glEnd();
+
+		//
+		pe.Proceed();
+
 
 		{
 			std::pair<Vector3, Vector3> r = v.Ray(Vector2(mousex+1, mousey+1));
