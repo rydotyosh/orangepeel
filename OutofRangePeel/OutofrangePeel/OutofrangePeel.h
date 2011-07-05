@@ -306,7 +306,22 @@ public:
 
 	bool SetupMesh(const std::vector<std::vector<int> > &mesh)
 	{
-		this->mesh=mesh;
+		this->mesh.clear();
+		for(int i=0;i<mesh.size();++i)
+		{
+			const std::vector<int> &m=mesh[i];
+			if(m.size()<=2)continue;
+			for(int j=0;j+2<m.size();++j)
+			{
+				std::vector<int> v;
+				v.push_back(m[0]);
+				for(int k=1;k<3;++k)
+				{
+					v.push_back(m[j+k]);
+				}
+				this->mesh.push_back(v);
+			}
+		}
 		return true;
 	}
 
@@ -605,7 +620,7 @@ private:
 		const std::vector<int> &fv=faces[fi].vertexIndices;
 		Vector3 a=vertices[fv[0]].moved-vertices[fv[1]].moved;
 		Vector3 b=vertices[fv[2]].moved-vertices[fv[1]].moved;
-		faces[fi].normalCache=b.ExProd(a).Norm();
+		faces[fi].normalCache=a.ExProd(b).Norm();
 	}
 
 	Vector3 PseudoNormalOfVertex(int vi)
@@ -682,42 +697,67 @@ public:
 
 		for(int i=0;i<vertices.size();++i)
 		{
-			vertices[i].velocity*=0.50;
+			vertices[i].velocity*=0.0;
 		}
 
-		double r=0.1;
+		double r=0.3;
+		double r2=0.05;
+		//double r3=0.05;
+		double dhsum=0;
 		for(int i=0;i<edges.size();++i)
 		{
 			std::vector<int> dv=DiagVerticesOfEdge(i);
 
 			if(dv.size()!=2)continue;
 
-			//Vector3 n1=faces[edges[i].faceIndices[0]].normalCache;
-			//Vector3 n0=faces[edges[i].faceIndices[0]].normalCache;
+			Vector3 n1=faces[edges[i].faceIndices[0]].normalCache;
+			Vector3 n0=faces[edges[i].faceIndices[1]].normalCache;
 
-			//double h0=vertices[edges[i].vertexIndices[0]].moved.DotProd(n0);
-			//double h1=vertices[edges[i].vertexIndices[1]].moved.DotProd(n1);
+			Vector3 e0=vertices[edges[i].vertexIndices[0]].moved;
+			Vector3 e1=vertices[edges[i].vertexIndices[1]].moved;
 
-			//double hv0=vertices[dv[0]].moved.DotProd(n0);
-			//double hv1=vertices[dv[1]].moved.DotProd(n1);
+			Vector3 de=e1-e0;
+			de.Normalize();
 
-			//double dh0=(h0-hv0);
-			//double dh1=(h1-hv1);
+			double h0=vertices[dv[1]].moved.DotProd(n0);
+			double h1=vertices[dv[0]].moved.DotProd(n1);
 
-			//vertices[dv[0]].velocity+=n0*(dh0*r);
-			//vertices[dv[1]].velocity+=n1*(dh1*r);
+			double hv0=vertices[dv[0]].moved.DotProd(n0);
+			double hv1=vertices[dv[1]].moved.DotProd(n1);
+
+			double dh0=(h0-hv0);
+			double dh1=(h1-hv1);
 
 			Vertex &v0=vertices[dv[0]];
 			Vertex &v1=vertices[dv[1]];
 
-			Vector3 d=v1.moved-v0.moved;
-			Vector3 dn=d.Norm();
+			v0.velocity+=n0*(dh0*r);
+			v1.velocity+=n1*(dh1*r);
 
-			v0.velocity-=dn*r;
-			v1.velocity+=dn*r;
+			Vector3 d=v1.moved-v0.moved;
+
+			Vector3 dp=d-de*d.DotProd(de);
+			Vector3 dn=dp.Norm();
+
+			v0.velocity-=dn*r2;
+			v1.velocity+=dn*r2;
+
+			//Vector3 dq=d-dn*d.DotProd(dn);
+			//v0.velocity+=dq*r3;
+			//v1.velocity-=dq*r3;
+
+
+			dhsum+=dh0*dh0+dh1*dh1;
 
 			
 		}
+		
+			{
+				char s[256];
+				sprintf(s,"%f\n",dhsum);
+				OutputDebugStringA(s);
+
+			}
 
 		//double rr=0.1;
 		//for(int i=0;i<faces.size();++i)
@@ -729,7 +769,7 @@ public:
 		//	}
 		//}
 
-		double k=1.0;
+		double k=0.1;
 		for(int i=0;i<edges.size();++i)
 		{
 			const Edge &e=edges[i];
@@ -742,7 +782,8 @@ public:
 			v1.velocity-=dvn*(dl*k);
 		}
 
-		double ratio=0.5;
+		//double ratio=satu( dhsum)*0.1;
+		double ratio=0.1;
 		for(int i=0;i<vertices.size();++i)
 		{
 			vertices[i].moved+=vertices[i].velocity*ratio;
@@ -940,17 +981,25 @@ private:
 
 		{
 		double pi=4.0*atan(1.0);
-		double R=3;
+		double R=2;
 		Stroke s;
-		for(int i=0;i<30;++i)
+		int N=20;
+		for(int i=0;i<N;++i)
 		{
-			double t=(double)i/(30.0-1.0);
+			double t=(double)i/(N-1.0);
 			double z=cos(pi*t);
 			double ss=sin(pi*t);
 			double x=cos(2.0*pi*R*t)*ss;
 			double y=sin(2.0*pi*R*t)*ss;
 			s.Add(Vector3(x,z,y));
 		}
+		//Stroke s;
+		//s.Add(Vector3(0,1,0));
+		//s.Add(Vector3(1,0,0));
+		//s.Add(Vector3(0,0,1));
+		//s.Add(Vector3(-1,0,0));
+		//s.Add(Vector3(0,0,-1));
+		//s.Add(Vector3(0,-1,0));
 		s.Simplify();
 		//s.Finalize();
 		strokes[0]=s;
