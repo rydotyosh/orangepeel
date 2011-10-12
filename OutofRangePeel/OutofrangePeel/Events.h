@@ -1,6 +1,7 @@
 
 #pragma once
 
+// infomation of mouse event
 class MouseEvent
 {
 private:
