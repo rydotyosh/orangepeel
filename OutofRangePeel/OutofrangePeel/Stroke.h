@@ -9,6 +9,7 @@
 #include "dashpod.h"
 
 
+
 class Stroke
 {
 	typedef float Float;
@@ -17,6 +18,9 @@ class Stroke
 
 	std::vector<Vector3> record;
 	std::vector<Vector3> simplified;
+
+	std::vector<Vector3> vertices;
+	std::vector<std::vector<int> > strokes;// [][vertex index]
 
 	double dist;
 
@@ -83,35 +87,39 @@ public:
 
 		return true;
 	}
-	
-	
-	bool Finalize()
+
+
+	std::vector<Vector3> Divide(const std::vector<Vector3> &poly)
 	{
-		// divide
 		std::vector<Vector3> tmp;
-		for(size_t i=0;i<simplified.size();++i)
+		for(size_t i = 0; i < poly.size(); ++i)
 		{
-			if(i==0)
+			if(i == 0)
 			{
-				tmp.push_back(simplified[0]);
+				tmp.push_back(poly[0]);
 				continue;
 			}
-			const Vector3 ds=simplified[i]-simplified[i-1];
-			double l=ds.Abs2();
-			if(l>dist*2.0)
+			const Vector3 ds = poly[i] - poly[i - 1];
+			double l = ds.Abs2();
+			if(l > dist * 2.0)
 			{
-				int n=ceil(l/dist/4.0);
-				for(size_t k=0;k<n;++k)
+				int n=ceil(l / (dist * 4.0));
+				for(size_t k = 0; k < n; ++k)
 				{
-					tmp.push_back((simplified[i-1]+ds*(double(k+1)/(n))).Norm());
+					tmp.push_back((poly[i - 1] + ds * (double(k + 1) / n)).Norm());
 				}
 			}
 			else
 			{
-				tmp.push_back(simplified[i]);
+				tmp.push_back(poly[i]);
 			}
 		}
-		simplified=tmp;
+		return tmp;
+	}
+	
+	bool Finalize()
+	{
+		simplified = Divide(simplified);
 		return true;
 	}
 

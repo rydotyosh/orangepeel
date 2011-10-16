@@ -337,6 +337,7 @@ class OrangePeel:public IGLEvents
 	typedef Rydot::Dashpod<double> Dashpod;
 
 	typedef Rydot::Mesh Mesh;
+	typedef Rydot::Face Face;
 
 	Mesh m;
 	std::vector<Vector3> originalVertices;
@@ -365,6 +366,10 @@ class OrangePeel:public IGLEvents
 
 	bool rdown;
 	bool pdown;
+
+	// collision of mouse ray to mesh
+	int collideFace;
+	Vector3 collidePoint;
 
 	//std::vector<Vector3> record;
 	std::vector<Stroke> strokes;
@@ -624,6 +629,12 @@ private:
 
 
 
+	void Update()
+	{
+
+	}
+
+
 	void Display()
 	{
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -773,47 +784,20 @@ private:
 		//
 		pe.Proceed();
 
-
 		{
-			std::pair<Vector3, Vector3> r = v.Ray(Vector2(mousex+1, mousey+1));
+			CalcCollision();
 
 			glDisable(GL_DEPTH_TEST);
 
-			//cross face
-			for(size_t i=0;i<m.faces.size();++i)
+			if(collideFace >= 0)
 			{
-				Vector3 coll;
-				if(
-					Rydot::ReflectTriangleRay(r.first, r.first+r.second*100,
-					m.vertex[m.faces[i].vertex[0]],
-					m.vertex[m.faces[i].vertex[2]],
-					m.vertex[m.faces[i].vertex[1]],
-					coll)
-					)
-				{
-					glColor3f(0,1,0);
-					if(pdown)
-					{
-						glColor3f(1,0,0);
-						size_t v0 = m.faces[i].vertex[0];
-						size_t v1 = m.faces[i].vertex[1];
-						size_t v2 = m.faces[i].vertex[2];
-						
-						Vector3 coef;
-						Rydot::ReflectTriangleRayTopology(r.first, r.first+r.second*100,
-														  m.vertex[m.faces[i].vertex[0]],
-														  m.vertex[m.faces[i].vertex[2]],
-														  m.vertex[m.faces[i].vertex[1]],
-														  coef);
-						strokes.back().Add(originalVertices[v0]*(1-coef.x-coef.y)+originalVertices[v2]*coef.x+originalVertices[v1]*coef.y);
-						strokes.back().Simplify();
-					}
-					glPointSize(10);
-					glBegin(GL_POINTS);
-					glVertex3f(coll.x, coll.y, coll.z);
-					glEnd();
-					break;
-				}
+				glColor3f(0,1,0);
+				if(pdown) glColor3f(1,0,0);
+
+				glPointSize(10);
+				glBegin(GL_POINTS);
+				glVertex3f(collidePoint.x, collidePoint.y, collidePoint.z);
+				glEnd();
 			}
 
 			glColor3f(0,0,1);
@@ -855,6 +839,36 @@ private:
 
 
 
+	// calc collision of mouse ray to mesh
+	void CalcCollision()
+	{
+		std::pair<Vector3, Vector3> r = v.Ray(Vector2(mousex + 1, mousey + 1));
+
+		collideFace = -1;
+		collidePoint = Vector3();
+
+		//cross face
+		for(size_t i = 0; i < m.faces.size(); ++i)
+		{
+			Vector3 coll;
+			const Face &fc = m.faces[i];
+			const std::vector<int> &fcv = fc.vertex;
+			if(!Rydot::ReflectTriangleRay(
+				r.first,
+				r.first + r.second * 100,
+				m.vertex[fcv[0]],
+				m.vertex[fcv[2]],
+				m.vertex[fcv[1]],
+				coll)) continue;
+
+			collideFace = i;
+			collidePoint = coll;
+			return;
+		}
+	}
+
+
+
 	void Animate()
 	{
 		//glutPostRedisplay();
@@ -867,18 +881,18 @@ private:
 
 	void Mouse(const MouseEvent &me)
 	{
-		mousex=me.X();
-		mousey=me.Y();
+		mousex = me.X();
+		mousey = me.Y();
 
 		if(me.IsClicked())
 		{
-			if(me.Button()==GLUT_MIDDLE_BUTTON)
+			if(me.Button() == GLUT_MIDDLE_BUTTON)
 			{
-				rdown = (me.State()==GLUT_DOWN);
+				rdown = (me.State() == GLUT_DOWN);
 			}
-			if(me.Button()==GLUT_LEFT_BUTTON)
+			if(me.Button() == GLUT_LEFT_BUTTON)
 			{
-				pdown = (me.State()==GLUT_DOWN);
+				pdown = (me.State() == GLUT_DOWN);
 
 				if(pdown)
 				{
@@ -901,29 +915,58 @@ private:
 
 		if(rdown)
 		{
-			float dx=mousex-tmpmousex;
-			float dy=mousey-tmpmousey;
+			float dx = mousex - tmpmousex;
+			float dy = mousey - tmpmousey;
 
-			Rect2 rt=v.GetView();
-			float yy=rt.Diagonal().y;
+			Rect2 rt = v.GetView();
+			float yy = rt.Diagonal().y;
 
-			theta.set(theta.getrefevernce()-dx/yy*3.0);
-			phi.set(phi.getrefevernce()+dy/yy*3.0);
+			theta.set(theta.getrefevernce() - dx / yy * 3.0);
+			phi.set(phi.getrefevernce() + dy / yy * 3.0);
 
-			if(phi.getrefevernce()>1.5)phi.set(1.5);
-			if(phi.getrefevernce()<-1.5)phi.set(-1.5);
+			if(phi.getrefevernce() > 1.5) phi.set(1.5);
+			if(phi.getrefevernce() < -1.5) phi.set(-1.5);
 
+		}
+
+		if(pdown)
+		{
+			CalcCollision();
+			if(collideFace >= 0)
+			{
+				Vector3 coef;
+				std::pair<Vector3, Vector3> r = v.Ray(Vector2(mousex + 1, mousey + 1));
+
+				const std::vector<int> &fcv = m.faces[collideFace].vertex;
+				size_t v0 = fcv[0];
+				size_t v1 = fcv[1];
+				size_t v2 = fcv[2];
+
+				Rydot::ReflectTriangleRayTopology(
+						r.first,
+						r.first + r.second * 100,
+						m.vertex[v0],
+						m.vertex[v2],
+						m.vertex[v1],
+						coef);
+
+				strokes.back().Add(
+						originalVertices[v0] * (1 - coef.x - coef.y) 
+						+ originalVertices[v2] * coef.x 
+						+ originalVertices[v1] * coef.y);
+				strokes.back().Simplify();
+			}
 		}
 		
 		if(me.IsWheel())
 		{
-			dist.set(dist.get()*(1.0-me.Dir()*0.2));
+			dist.set(dist.get() * (1.0 - me.Dir() * 0.2));
 		}
 
-		tmpmousex=mousex;
-		tmpmousey=mousey;
+		tmpmousex = mousex;
+		tmpmousey = mousey;
 		
-		std::cout<<mousex<<"	"<<mousey<<std::endl;
+		std::cout << mousex << "\t" << mousey << std::endl;
 
 		//glutPostRedisplay();
 	}
