@@ -43,6 +43,8 @@
 		C94D3B4713362ECF00B70437 /* Events.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = Events.h; path = ../OutofrangePeel/Events.h; sourceTree = SOURCE_ROOT; };
 		C94D3B4813362ECF00B70437 /* MacMain.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = MacMain.h; path = ../OutofrangePeel/MacMain.h; sourceTree = SOURCE_ROOT; };
 		C94D3B4913362ECF00B70437 /* matrixutil.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = matrixutil.h; path = ../OutofrangePeel/matrixutil.h; sourceTree = SOURCE_ROOT; };
+		C9614198144AEED8005A0DFA /* CutMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CutMesh.h; path = ../OutofrangePeel/CutMesh.h; sourceTree = SOURCE_ROOT; };
+		C9614199144AEED8005A0DFA /* Stroke.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Stroke.h; path = ../OutofrangePeel/Stroke.h; sourceTree = SOURCE_ROOT; };
 		C97AE55F1335F55200CB4CD8 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
 		C97AE5611335F55200CB4CD8 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		C99313B61379622300B3AEC0 /* QhullCalc.h */ = {isa = PBXFileReference; fileEncoding = 2147486209; lastKnownFileType = sourcecode.c.h; name = QhullCalc.h; path = ../OutofrangePeel/QhullCalc.h; sourceTree = SOURCE_ROOT; };
@@ -149,6 +151,8 @@
 		C94D3B4213362E9100B70437 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				C9614198144AEED8005A0DFA /* CutMesh.h */,
+				C9614199144AEED8005A0DFA /* Stroke.h */,
 				C938BEA713366DE00039D6D6 /* dashpod.h */,
 				C94D3B4313362ECF00B70437 /* MacMain.cpp */,
 				C94D3B4413362ECF00B70437 /* OutofrangePeel.h */,
