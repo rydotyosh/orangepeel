@@ -23,11 +23,7 @@ public:
 
 		bool HasPoint(int pi)const
 		{
-			for(size_t i=0;i<pointIndices.size();++i)
-			{
-				if(pointIndices[i]==pi)return true;
-			}
-			return false;
+			return std::find(pointIndices.begin(), pointIndices.end(), pi) != pointIndices.end();
 		}
 	};
 
@@ -41,8 +37,8 @@ public:
 
 		bool IsSibling(const Coedge &c)const
 		{
-			if(pointIndices[0]==c.pointIndices[0] && pointIndices[1]==c.pointIndices[1] )return true;
-			if(pointIndices[0]==c.pointIndices[1] && pointIndices[1]==c.pointIndices[0] )return true;
+			if(pointIndices[0] == c.pointIndices[0] && pointIndices[1] == c.pointIndices[1] )return true;
+			if(pointIndices[0] == c.pointIndices[1] && pointIndices[1] == c.pointIndices[0] )return true;
 			return false;
 		}
 	};
@@ -81,7 +77,7 @@ private:
 	// returns adjacent faces from faces[fi]
 	std::vector<int> FindAdjacentFaces(int fi)const
 	{
-		if(fi < 0 || fi >= faces.size())return std::vector<int>();
+		if(fi < 0 || fi >= (int)faces.size())return std::vector<int>();
 
 		const Face &f=faces[fi];
 		std::vector<int> r;
@@ -99,8 +95,8 @@ private:
 	// returns connected faces from faces[fi] where belongs to vertices[pi]
 	std::vector<int> PointFacePie(int pi, int fi)const
 	{
-		if(pi<0 || pi>=vertices.size())return std::vector<int>();
-		if(fi<0 || fi>=faces.size())return std::vector<int>();
+		if(pi<0 || pi>=(int)vertices.size())return std::vector<int>();
+		if(fi<0 || fi>=(int)faces.size())return std::vector<int>();
 
 		std::vector<int> working;
 		boost::unordered_set<int> used;
@@ -236,7 +232,7 @@ public:
 		for(size_t i = 0; i < coedges.size(); ++i)
 		{
 			Coedge &c1 = coedges[i];
-			size_t k = c1.coedgeIndex;
+			int k = c1.coedgeIndex;
 
 			if(k < 0)
 			{
