@@ -191,6 +191,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\CutMesh.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Events.h"
 				>
 			</File>
@@ -200,6 +204,10 @@
 			</File>
 			<File
 				RelativePath=".\QhullCalc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Stroke.h"
 				>
 			</File>
 			<File
