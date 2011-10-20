@@ -372,7 +372,7 @@ class OrangePeel:public IGLEvents
 	Vector3 collidePoint;
 
 	//std::vector<Vector3> record;
-	std::vector<Stroke> strokes;
+	Stroke stroke;
 	
 	std::vector<Vector3> control;
 
@@ -499,13 +499,14 @@ private:
 
 		m.CalcNormal();
 
-		strokes.push_back(Stroke());
+		//strokes.push_back(Stroke());
 
 		{
+		stroke.Open();
 		double pi=4.0*atan(1.0);
 		double R=2;
-		Stroke s;
-		int N=20;
+		//Stroke s;
+		int N=40;
 		for(int i=0;i<N;++i)
 		{
 			double t=(double)i/(N-1.0);
@@ -513,7 +514,7 @@ private:
 			double ss=sin(pi*t);
 			double x=cos(2.0*pi*R*t)*ss;
 			double y=sin(2.0*pi*R*t)*ss;
-			s.Add(Vector3(x,z,y));
+			stroke.Add(Vector3(x,z,y));
 		}
 		//Stroke s;
 		//s.Add(Vector3(0,1,0));
@@ -522,10 +523,12 @@ private:
 		//s.Add(Vector3(-1,0,0));
 		//s.Add(Vector3(0,0,-1));
 		//s.Add(Vector3(0,-1,0));
-		s.Simplify();
+		//s.Simplify();
 		//s.Finalize();
-		strokes[0]=s;
-		strokes.push_back(Stroke());
+		//strokes[0]=s;
+		//strokes.push_back(Stroke());
+		stroke.Close();
+		stroke.Optimize();
 		}
 
 		CalcQH();
@@ -544,9 +547,9 @@ private:
 		//vtx.push_back(Rydot::Vector3d(1,-1,-1).Norm());
 		//vtx.push_back(Rydot::Vector3d(-1,1,-1).Norm());
 		std::vector<std::vector<int> > cutter;
-		for(size_t i=0;i<strokes.size();++i)
+		for(size_t i=0;i<stroke.Size();++i)
 		{
-			const std::vector<Vector3> &s=strokes[i].Get();
+			const std::vector<Vector3> &s=stroke.GetSeg(i);
 			int vtxidx=vtx.size();
 			for(size_t k=0;k<s.size();++k)
 			{
@@ -730,26 +733,28 @@ private:
 		glEnd();
 
 		glEnable(GL_LIGHTING);
+		glDepthMask(false);
 		//glColor3f(0.95f,0.6f,0.1f);
 		glBegin(GL_TRIANGLES);
-		float orange[]={0.95f,0.6f,0.1f,1};
+		float orange[]={0.95f,0.6f,0.1f,0.7f};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, orange);
 		float amborange[]={0.95f,0.6f,0.1f,1};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, amborange);
 		float emiorange[]={0.3f,0.2f,0.1f,1};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emiorange);
 
-		//for(size_t i=0;i<m.faces.size();++i)
-		//{
-		//	for(size_t v=0;v<3;++v)
-		//	{
-		//		size_t p=m.faces[i].vertex[v];
-		//		glNormal3fv(&(m.normals[p].x));
-		//		glVertex3fv(&(m.vertex[p].x));
-		//	}
-		//}
+		for(size_t i=0;i<m.faces.size();++i)
+		{
+			for(size_t v=0;v<3;++v)
+			{
+				size_t p=m.faces[i].vertex[v];
+				glNormal3fv(&(m.normals[p].x));
+				glVertex3fv(&(m.vertex[p].x));
+			}
+		}
 		glEnd();
 		glDisable(GL_LIGHTING);
+		glDepthMask(true);
 
 		//const std::vector<CutMesh::Face> &fcs=pl.GetFaces();
 		//const std::vector<Vector3> &pts=pl.GetSplPoints();
@@ -802,10 +807,10 @@ private:
 
 			glColor3f(0,0,1);
 			Rydot::Rect3f bb(-1,-1,-1,1,1,1);
-			for(size_t i=0;i<strokes.size();++i)
+			for(size_t i=0;i<stroke.Size();++i)
 			{
 				glBegin(GL_LINE_STRIP);
-				const std::vector<Vector3> &s=strokes[i].Get();
+				const std::vector<Vector3> &s=stroke.GetSeg(i);
 				for(size_t k=0;k<s.size();++k)
 				{
 					const Vector3 r=bb.TransformFrom(Rydot::MeshDeformer::beziercube(control, bb.TransformTo(s[k])));
@@ -896,18 +901,21 @@ private:
 
 				if(pdown)
 				{
-					if(strokes.empty())
-					{
-					}
-					if(!strokes.back().Get().empty())
-					{
-						strokes.push_back(Stroke());
-					}
+					//if(strokes.empty())
+					//{
+					//}
+					//if(!stroke.back().Get().empty())
+					//{
+					//	strokes.push_back(Stroke());
+					//}
+					stroke.Open();
 				}
 				else
 				{
-					if(!strokes.empty() && !strokes.back().Get().empty())
-						strokes.back().Finalize();
+					//if(!strokes.empty() && !strokes.back().Get().empty())
+					//	strokes.back().Finalize();
+					stroke.Close();
+					stroke.Optimize();
 					CalcQH();
 				}
 			}
@@ -950,11 +958,11 @@ private:
 						m.vertex[v1],
 						coef);
 
-				strokes.back().Add(
+				stroke.Add(
 						originalVertices[v0] * (1 - coef.x - coef.y) 
 						+ originalVertices[v2] * coef.x 
 						+ originalVertices[v1] * coef.y);
-				strokes.back().Simplify();
+				//strokes.back().Simplify();
 			}
 		}
 		
