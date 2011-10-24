@@ -195,7 +195,7 @@ private:
 			: crossindex(ci_)
 			, iparam(ip_)
 		{}
-		bool operator<(const kc &x){return iparam < x.iparam;}
+		bool operator<(const kc &x)const{return iparam < x.iparam;}
 	};
 
 	struct kc2
