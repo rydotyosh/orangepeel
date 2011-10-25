@@ -108,6 +108,31 @@ private:
 		return true;
 	}
 
+public:
+	bool IsScratch()
+	{
+		Simplify();
+		std::vector<Vector3> &pts = simplified;
+		// has N or more peak edge
+		const int N = 2;
+		int peaks = 0;
+		for(size_t i = 0;i + 2 < pts.size(); ++i)
+		{
+			const Vector3 &p = pts[i];
+			const Vector3 &q = pts[i + 1];
+			const Vector3 &r = pts[i + 2];
+			Vector3 dp = q - p;
+			Vector3 dr = r - q;
+			if(dp.Norm().DotProd(dr.Norm()) < -0.9)
+			{
+				++peaks;
+				if(peaks > N)
+					return true;
+			}
+		}
+		return false;
+	}
+
 
 private:
 	std::vector<Vector3> Divide(const std::vector<Vector3> &poly)
@@ -464,13 +489,14 @@ public:
 public:
 	void Close()
 	{
-
+		Simplify();
+		record.clear();
 	}
 
 public:
 	void Optimize()
 	{
-		Simplify();
+		//Simplify();
 		Finalize();
 
 		std::vector<Vector3> ts;
@@ -478,6 +504,50 @@ public:
 		DecomposeSelfCross(ts, edg);
 
 		AddCross(ts, edg);
+
+		Bake();
+	}
+
+public:
+	void Erase()
+	{
+		//Simplify();
+
+		std::vector<Edge> remains;
+
+		int N = 2;
+
+		for(int n = 0; n < edges.size(); ++n)
+		{
+			const Edge &e1 = edges[n];
+
+			int numcross = 0;
+
+			for(int i = 0; i + 1 < (int)e1.tessIndex.size(); ++i)
+			{
+				const Vector3 &a = tess[e1.tessIndex[i]];
+				const Vector3 &b = tess[e1.tessIndex[i + 1]];
+				for(int j = 0; j + 1 < (int)simplified.size(); ++j)
+				{
+					const Vector3 &c = simplified[j];
+					const Vector3 &d = simplified[j + 1];
+					Vector3 cross;
+					if(Rydot::Spherical_Intersection_ArcArc(
+						a,b,c,d, cross))
+					{
+						++numcross;
+						if(numcross > N)break;
+					}
+				}
+				if(numcross > N)break;
+			}
+
+			if(numcross > N)continue;
+
+			remains.push_back(e1);
+		}
+
+		edges = remains;
 
 		Bake();
 	}

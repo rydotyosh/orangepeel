@@ -771,23 +771,26 @@ private:
 		//}
 		//glEnd();
 
-		const std::vector<Peel::Face> &fcs=pe.faces;
-		const std::vector<Peel::Vertex> &vts=pe.vertices;
-		glBegin(GL_TRIANGLES);
-		for(size_t i=0;i<fcs.size();++i)
-		{
-			for(size_t v=0;v<3;++v)
-			{
-				glColor3f((i%10)/10.0,((i/10)%10)/10.0,0);
-				int idx=fcs[i].vertexIndices[2-v];
-				Vector3 p=vts[idx].moved+Vector3(0.0,0.0,0.0);
-				glVertex3fv(&(p.x));
-			}
-		}
-		glEnd();
+
+		// peeling motion
+
+		//const std::vector<Peel::Face> &fcs=pe.faces;
+		//const std::vector<Peel::Vertex> &vts=pe.vertices;
+		//glBegin(GL_TRIANGLES);
+		//for(size_t i=0;i<fcs.size();++i)
+		//{
+		//	for(size_t v=0;v<3;++v)
+		//	{
+		//		glColor3f((i%10)/10.0,((i/10)%10)/10.0,0);
+		//		int idx=fcs[i].vertexIndices[2-v];
+		//		Vector3 p=vts[idx].moved+Vector3(0.0,0.0,0.0);
+		//		glVertex3fv(&(p.x));
+		//	}
+		//}
+		//glEnd();
 
 		//
-		pe.Proceed();
+		//pe.Proceed();
 
 		{
 			CalcCollision();
@@ -805,10 +808,14 @@ private:
 				glEnd();
 			}
 
+			bool scratch = stroke.IsScratch();
+
 			glColor3f(0,0,1);
 			Rydot::Rect3f bb(-1,-1,-1,1,1,1);
 			for(size_t i=0;i<stroke.Size();++i)
 			{
+				if(i + 1 == stroke.Size() && scratch)
+					glColor3f(1,0,0);
 				glBegin(GL_LINE_STRIP);
 				const std::vector<Vector3> &s=stroke.GetSeg(i);
 				for(size_t k=0;k<s.size();++k)
@@ -823,7 +830,7 @@ private:
 
 		// qhshow
 		{
-			glColor4f(1,0,0,0.5);
+			glColor4f(1,0,0,0.2);
 			for(size_t i=0;i<qhfcs.size();++i)
 			{
 				glBegin(GL_LINE_STRIP);
@@ -914,8 +921,16 @@ private:
 				{
 					//if(!strokes.empty() && !strokes.back().Get().empty())
 					//	strokes.back().Finalize();
+					bool scratch = stroke.IsScratch();
 					stroke.Close();
-					stroke.Optimize();
+					if(scratch)
+					{
+						stroke.Erase();
+					}
+					else
+					{
+						stroke.Optimize();
+					}
 					CalcQH();
 				}
 			}
