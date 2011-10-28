@@ -32,36 +32,46 @@ bool QhullCalc::Calc(
 	std::vector<v3d> &pout,
 	std::vector<std::vector<int> > &fout)const
 {
-	char cmd[]="qhull ";
-	if(qh_new_qhull(3,int(pin.size()),const_cast<double*>(&pin[0].x),false,cmd,NULL,NULL))
+	if(pin.size() < 4)
 		return false;
-	pointT *point, *pointtemp;
-	FORALLpoints
+
+	try
 	{
-		pout.push_back(v3d(point[0],point[1],point[2]));
-	}
-	facetT *facet;
-	vertexT *vertex, **vertexp;
-	FORALLfacets
-	{
-		std::vector<int> idx;
-		setT *vertices=qh_facet3vertex(facet);
-		qh_setsize(vertices);
-		FOREACHvertex_(vertices)
+		char cmd[]="qhull ";
+		if(qh_new_qhull(3,int(pin.size()),const_cast<double*>(&pin[0].x),false,cmd,NULL,NULL))
+			return false;
+		pointT *point, *pointtemp;
+		FORALLpoints
 		{
-			idx.push_back(qh_pointid(vertex->point));
+			pout.push_back(v3d(point[0],point[1],point[2]));
 		}
-		fout.push_back(idx);
-		qh_settempfree(&vertices);
+		facetT *facet;
+		vertexT *vertex, **vertexp;
+		FORALLfacets
+		{
+			std::vector<int> idx;
+			setT *vertices=qh_facet3vertex(facet);
+			qh_setsize(vertices);
+			FOREACHvertex_(vertices)
+			{
+				idx.push_back(qh_pointid(vertex->point));
+			}
+			fout.push_back(idx);
+			qh_settempfree(&vertices);
+		}
+		qh_freeqhull(!qh_ALL);
+		int curlong, totlong;
+		qh_memfreeshort(&curlong, &totlong);
+		if(curlong || totlong)
+		{
+			return false;
+		}
+		return true;
 	}
-	qh_freeqhull(!qh_ALL);
-	int curlong, totlong;
-	qh_memfreeshort(&curlong, &totlong);
-	if(curlong || totlong)
+	catch(...)
 	{
 		return false;
 	}
-	return true;
 }
 
 

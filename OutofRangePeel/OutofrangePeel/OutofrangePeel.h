@@ -605,14 +605,14 @@ private:
 		//pl.OutDot();
 
 		//
-		pe.SetupVertices(pl.GetSplPoints());
-		pe.SetupFaces(pl.GetFaces());
-		pe.SetupInvRef();
+		//pe.SetupVertices(pl.GetSplPoints());
+		//pe.SetupFaces(pl.GetFaces());
+		//pe.SetupInvRef();
 
-		for(int i=0;i<1;++i)
-		{
-			pe.Proceed();
-		}
+		//for(int i=0;i<1;++i)
+		//{
+		//	pe.Proceed();
+		//}
 
 
 #ifdef _WIN32
