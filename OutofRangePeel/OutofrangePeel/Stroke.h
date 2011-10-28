@@ -43,11 +43,15 @@ class Stroke
 	std::vector< std::vector<Vector3> > baked;
 
 	double dist;
+	int scratchNum;
+	double scratchThreshold;
 
 
 public:
 	Stroke()
-	:dist(0.002)
+	: dist(0.002)
+	, scratchNum(2)
+	, scratchThreshold(0.8)
 	{
 	}
 
@@ -114,7 +118,7 @@ public:
 		Simplify();
 		std::vector<Vector3> &pts = simplified;
 		// has N or more peak edge
-		const int N = 2;
+		const int N = scratchNum;
 		int peaks = 0;
 		for(size_t i = 0;i + 2 < pts.size(); ++i)
 		{
@@ -123,7 +127,7 @@ public:
 			const Vector3 &r = pts[i + 2];
 			Vector3 dp = q - p;
 			Vector3 dr = r - q;
-			if(dp.Norm().DotProd(dr.Norm()) < -0.9)
+			if(dp.Norm().DotProd(dr.Norm()) < -scratchThreshold)
 			{
 				++peaks;
 				if(peaks >= N)
@@ -345,7 +349,13 @@ public:
 					const Vector3 dc = cross - c;
 					const Vector3 dd = d - c;
 
-					crosses.push_back(ijc2(e1.edgeId, i, e2.edgeId, j, cross, da.DotProd(db)/da.Abs2(), dc.DotProd(dd)/dc.Abs2()));
+					double iparam = da.DotProd(db)/db.Abs2();
+					double jparam = dc.DotProd(dd)/dd.Abs2();
+
+					if(iparam < 0 || jparam < 0)continue;
+					if(iparam > 1.0 || jparam > 1.0)continue;
+
+					crosses.push_back(ijc2(e1.edgeId, i, e2.edgeId, j, cross, iparam, jparam));
 				}
 			}
 		}
@@ -393,7 +403,7 @@ public:
 		for(int i = 0; i < edges.size(); ++i)
 		{
 			e.push_back(std::vector<int>());
-			for(int j = 0; j < edges[i].tessIndex.size(); ++j)
+			for(int j = 0; j + 1 < edges[i].tessIndex.size(); ++j)
 			{
 				int x = edges[i].tessIndex[j];
 				std::map<eii, std::vector<kc> >::iterator f = halfcross.find(eii(edges[i].edgeId, j));
@@ -499,11 +509,14 @@ public:
 		//Simplify();
 		Finalize();
 
-		std::vector<Vector3> ts;
-		std::vector<std::vector<int> > edg;
-		DecomposeSelfCross(ts, edg);
+		if(simplified.size() > 2)
+		{
+			std::vector<Vector3> ts;
+			std::vector<std::vector<int> > edg;
+			DecomposeSelfCross(ts, edg);
 
-		AddCross(ts, edg);
+			AddCross(ts, edg);
+		}
 
 		Bake();
 	}
@@ -515,7 +528,7 @@ public:
 
 		std::vector<Edge> remains;
 
-		int N = 2;
+		int N = scratchNum;
 
 		for(int n = 0; n < edges.size(); ++n)
 		{
