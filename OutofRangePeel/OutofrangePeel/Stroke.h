@@ -364,11 +364,16 @@ public:
 	void AddCross(std::vector<Vector3> &ts, std::vector< std::vector<int> > &edg)
 	{
 		// offset edg index
+		int maxEdgeId = 0;
+		for(int i = 0; i < edges.size(); ++i)
+		{
+			maxEdgeId = std::max(maxEdgeId, edges[i].edgeId);
+		}
 		std::vector<Edge> es(edg.size());
 		for(int i = 0; i < (int)edg.size(); ++i)
 		{
 			std::vector<int> &ei = edg[i];
-			es[i].edgeId = i + (int)edges.size();
+			es[i].edgeId = i + maxEdgeId + 1;
 			es[i].tessIndex = ei;
 			for(int j = 0; j < (int)ei.size(); ++j)
 			{
@@ -377,6 +382,7 @@ public:
 		}
 		tess.insert(tess.end(), ts.begin(), ts.end());
 
+		// calc cross point
 		std::vector<ijc2> crs;
 		for(int i = 0; i < (int)edges.size(); ++i)
 		{
@@ -386,6 +392,7 @@ public:
 			}
 		}
 
+		// transform cross point representation
 		std::map<eii, std::vector<kc> > halfcross;
 		for(int i = 0; i < (int)crs.size(); ++i)
 		{
@@ -485,7 +492,7 @@ public:
 public:
 	const int Size()const
 	{
-		return (int)edges.size() + 1;
+		return (int)edges.size();
 		//return 1;
 	}
 
@@ -569,11 +576,13 @@ public:
 public:
 	const std::vector<Vector3> &GetSeg(int i)const
 	{
-		if (baked.size() == i)return simplified;
 		return baked[i];
 	}
 
-
+	const std::vector<Vector3> &GetSimplified()const
+	{
+		return simplified;
+	}
 
 };
 

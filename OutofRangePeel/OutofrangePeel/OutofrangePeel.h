@@ -372,6 +372,7 @@ class OrangePeel:public IGLEvents
 	Vector3 collidePoint;
 
 	//std::vector<Vector3> record;
+	std::vector<Stroke> undostack;
 	Stroke stroke;
 	
 	std::vector<Vector3> control;
@@ -503,19 +504,20 @@ private:
 
 		{
 		stroke.Open();
-		double pi=4.0*atan(1.0);
-		double R=2;
-		//Stroke s;
-		int N=40;
-		for(int i=0;i<N;++i)
-		{
-			double t=(double)i/(N-1.0);
-			double z=cos(pi*t);
-			double ss=sin(pi*t);
-			double x=cos(2.0*pi*R*t)*ss;
-			double y=sin(2.0*pi*R*t)*ss;
-			stroke.Add(Vector3(x,z,y));
-		}
+		//double pi=4.0*atan(1.0);
+		//double R=2;
+		////Stroke s;
+		//int N=40;
+		//for(int i=0;i<N;++i)
+		//{
+		//	double t=(double)i/(N-1.0);
+		//	double z=cos(pi*t);
+		//	double ss=sin(pi*t);
+		//	double x=cos(2.0*pi*R*t)*ss;
+		//	double y=sin(2.0*pi*R*t)*ss;
+		//	stroke.Add(Vector3(x,z,y));
+		//}
+
 		//Stroke s;
 		//s.Add(Vector3(0,1,0));
 		//s.Add(Vector3(1,0,0));
@@ -565,7 +567,8 @@ private:
 		}
 
 		std::vector<Rydot::Vector3d> qhp;
-		qh.Calc(vtx, qhp, qhfcs);
+		if(!vtx.empty())
+			qh.Calc(vtx, qhp, qhfcs);
 
 		Rydot::Rect3f bb(-1,-1,-1,1,1,1);
 		qhpts.resize(qhp.size());
@@ -814,8 +817,6 @@ private:
 			Rydot::Rect3f bb(-1,-1,-1,1,1,1);
 			for(size_t i=0;i<stroke.Size();++i)
 			{
-				if(i + 1 == stroke.Size() && scratch)
-					glColor3f(1,0,0);
 				glBegin(GL_LINE_STRIP);
 				const std::vector<Vector3> &s=stroke.GetSeg(i);
 				for(size_t k=0;k<s.size();++k)
@@ -824,6 +825,18 @@ private:
 					glVertex3f(r.x, r.y, r.z);
 				}
 				glEnd();
+			}
+			if(scratch)
+				glColor3f(1,0,0);
+			{
+			glBegin(GL_LINE_STRIP);
+			const std::vector<Vector3> &s=stroke.GetSimplified();
+			for(size_t k=0;k<s.size();++k)
+			{
+				const Vector3 r=bb.TransformFrom(Rydot::MeshDeformer::beziercube(control, bb.TransformTo(s[k])));
+				glVertex3f(r.x, r.y, r.z);
+			}
+			glEnd();
 			}
 		}
 
