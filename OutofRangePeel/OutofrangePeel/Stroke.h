@@ -47,7 +47,7 @@ class Stroke
 
 public:
 	Stroke()
-	:dist(0.005)
+	:dist(0.002)
 	{
 	}
 
@@ -126,7 +126,7 @@ public:
 			if(dp.Norm().DotProd(dr.Norm()) < -0.9)
 			{
 				++peaks;
-				if(peaks > N)
+				if(peaks >= N)
 					return true;
 			}
 		}
@@ -536,13 +536,13 @@ public:
 						a,b,c,d, cross))
 					{
 						++numcross;
-						if(numcross > N)break;
+						if(numcross >= N)break;
 					}
 				}
-				if(numcross > N)break;
+				if(numcross >= N)break;
 			}
 
-			if(numcross > N)continue;
+			if(numcross >= N)continue;
 
 			remains.push_back(e1);
 		}
