@@ -420,7 +420,7 @@ public:
 		for(int i = 0; i < es.size(); ++i)
 		{
 			e.push_back(std::vector<int>());
-			for(int j = 0; j < es[i].tessIndex.size(); ++j)
+			for(int j = 0; j + 1 < es[i].tessIndex.size(); ++j)
 			{
 				int x = es[i].tessIndex[j];
 				std::map<eii, std::vector<kc> >::iterator f = halfcross.find(eii(es[i].edgeId, j));
