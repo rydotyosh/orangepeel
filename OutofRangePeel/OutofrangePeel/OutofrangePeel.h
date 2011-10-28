@@ -390,7 +390,7 @@ public:
 		,tmpmousey(0)
 		,theta(0.0)
 		,phi(0.0)
-		,dist(5.0)
+		,dist(4.0)
 		,rdown(false)
 		,pdown(false)
 	{
