@@ -324,6 +324,7 @@
 					/opt/local/include,
 				);
 				LIBRARY_SEARCH_PATHS = ../../../qhull/lib;
+				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
 			};
