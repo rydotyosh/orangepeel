@@ -13,9 +13,10 @@
 #include "boost/shared_ptr.hpp"
 #include "OutofrangePeel.h"
 
+#include "DefaultEvent.h"
 
-
-boost::shared_ptr<IGLEvents> events(new OrangePeel());
+//boost::shared_ptr<IGLEvents> events(new OrangePeel());
+boost::shared_ptr<IGLEvents> events(new DefaultEvent());
 
 
 
